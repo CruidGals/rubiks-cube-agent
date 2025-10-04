@@ -1,6 +1,6 @@
 # rubiks-cube-agent
 
-This template should help get you started developing with Vue 3 in Vite.
+TBD Rubik's Cube AI agent to help improve you speedsolves.
 
 ## Recommended IDE Setup
 
