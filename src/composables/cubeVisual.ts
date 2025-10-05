@@ -1,9 +1,10 @@
 import { MeshBasicMaterial, Vector3, Object3D } from "three";
-import { ref } from "vue";
+import { ref, shallowRef, markRaw } from "vue";
+
+export const cubes = ref<{ id: number; position: Vector3; object: Object3D | null }[]>([]);
 
 export function useRubiksCube() {
     // Cube positions
-    const cubes = ref([]);
     const separation = 1.05;
     let id = 0;
 
@@ -15,7 +16,7 @@ export function useRubiksCube() {
 
                 cubes.value.push({
                     id: id++,
-                    position: new Vector3(x, y, z),
+                    position: markRaw(new Vector3(x, y, z)),
                     object: null as Object3D | null // will be set later when mesh is created
                 });
             }
