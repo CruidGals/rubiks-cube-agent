@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import RubiksCube from './components/RubiksCube.vue';
+import SceneShell from './components/SceneShell.vue';
 </script>
 
 <template>
-  <RubiksCube />
+  <SceneShell />
 </template>
 
 <style scoped>
