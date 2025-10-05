@@ -4,6 +4,7 @@ import { useTres } from '@tresjs/core';
 import { useCameraControls } from '../composables/cameraControls';
 import { cubes, useRubiksCube } from '../composables/cubeVisual';
 import { CubeFace, useCubeLogic } from '../composables/cubeLogic';
+import { Texture } from 'three';
 
 const { hovering, onCubePointerDown } = useCameraControls();
 const { mats, setCubeObject } = useRubiksCube();
@@ -14,8 +15,10 @@ const { scene } = useTres();
 onMounted(async () => {
   await nextTick(); // ensure meshes are in the scene & have parents
   // now it's safe:
-  rotateFace(scene.value, CubeFace.R, true);
-  
+  rotateFace(scene.value, CubeFace.L, true);
+  rotateFace(scene.value, CubeFace.U, false);
+  rotateFace(scene.value, CubeFace.L, false);
+  rotateFace(scene.value, CubeFace.U, true);
 });
 
 </script>

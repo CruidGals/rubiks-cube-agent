@@ -15,23 +15,23 @@ export function useCubeLogic() {
     function grabCubesFromFace(face: CubeFace) {
         switch (face) {
             case CubeFace.R:
-                return cubes.value.filter(cube => cube.position.x > 0.5).map(cube => cube.object);
+                return cubes.value.filter(cube => cube.position.x > 0.5);
             case CubeFace.L:
-                return cubes.value.filter(cube => cube.position.x < -0.5).map(cube => cube.object);
+                return cubes.value.filter(cube => cube.position.x < -0.5);
             case CubeFace.U:
-                return cubes.value.filter(cube => cube.position.y > 0.5).map(cube => cube.object);
+                return cubes.value.filter(cube => cube.position.y > 0.5);
             case CubeFace.D:
-                return cubes.value.filter(cube => cube.position.y < -0.5).map(cube => cube.object);
+                return cubes.value.filter(cube => cube.position.y < -0.5);
             case CubeFace.F:
-                return cubes.value.filter(cube => cube.position.z > 0.5).map(cube => cube.object);
+                return cubes.value.filter(cube => cube.position.z > 0.5);
             case CubeFace.B:
-                return cubes.value.filter(cube => cube.position.z < -0.5).map(cube => cube.object);
+                return cubes.value.filter(cube => cube.position.z < -0.5);
         }
     }
 
     // Rotate a face based on the enum
     // Prime denotes if is counter clockwise (e.g. R', L', U', D', F', B')
-    function rotateFace(scene: TresScene, face: CubeFace, primed: boolean = false) {
+    async function rotateFace(scene: TresScene, face: CubeFace, primed: boolean = false) {
         
         // Make sure there aren't any missing values
         if (!scene || !masterGroup.value) {
@@ -39,8 +39,9 @@ export function useCubeLogic() {
             return;
         }
 
-        const cubesToRotate = grabCubesFromFace(face);
-        let angle = primed ? -Math.PI / 2 : Math.PI / 2;
+        const cubes = grabCubesFromFace(face);
+        const cubesToRotate = cubes.map(cube => cube.object);
+        let angle = primed ? Math.PI / 2 : -Math.PI / 2;
 
         // Check if any cubes are null
         if (cubesToRotate.includes(null)) {
@@ -81,6 +82,19 @@ export function useCubeLogic() {
         cubesToRotate.forEach(cube => {
             masterGroup.value?.attach(cube);
         });
+
+        // Set new positions accordingly
+        for (let i = 0; i < cubes.length; i++) {
+            cubes[i].position.copy(cubesToRotate[i]!.position);
+
+            // Round to avoid floating point errors (set it to both position variables)
+            cubes[i].position.x = Math.round(cubes[i].position.x * 100) / 100;
+            cubesToRotate[i]!.position.x = cubes[i].position.x;
+            cubes[i].position.y = Math.round(cubes[i].position.y * 100) / 100;
+            cubesToRotate[i]!.position.y = cubes[i].position.y;
+            cubes[i].position.z = Math.round(cubes[i].position.z * 100) / 100;
+            cubesToRotate[i]!.position.z = cubes[i].position.z;
+        }
 
         // Remove pivot from scene
         pivot.removeFromParent();
