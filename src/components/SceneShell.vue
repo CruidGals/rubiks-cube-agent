@@ -13,11 +13,7 @@ const { onCameraControl } = useCameraControls();
         <TresCanvas window-size >
             <TresPerspectiveCamera :args="[75, 1, 0.1, 1000]" :position="[5,5,5]" :look-at="[0,0,0]"/>
             <CameraControls make-default :mouse-buttons="onCameraControl()" />
-            <TresScene>
-                <RubiksCube />
-                <TresAmbientLight :intensity="1.0" />
-                <TresPointLight :position="[10,-10,10]" />
-            </TresScene>
+            <RubiksCube />
         </TresCanvas>
     </div>
 </template>
