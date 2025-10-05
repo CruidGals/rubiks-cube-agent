@@ -33,7 +33,7 @@ export function useRubiksCube() {
     new MeshBasicMaterial({ color: 0x0000ff })  // -Z
     ];
 
-    function setCubeObject(id: number, obj: Object3D) {
+    function setCubeObject(id: number, obj) {
         cubes.value[id].object = obj;
     }
 

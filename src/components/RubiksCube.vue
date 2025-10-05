@@ -12,13 +12,21 @@ const { masterGroup, rotateFace } = useCubeLogic();
 
 const { scene } = useTres();
 
-onMounted(async () => {
-  await nextTick(); // ensure meshes are in the scene & have parents
-  // now it's safe:
-  rotateFace(scene.value, CubeFace.L, true);
-  rotateFace(scene.value, CubeFace.U, false);
-  rotateFace(scene.value, CubeFace.L, false);
-  rotateFace(scene.value, CubeFace.U, true);
+window.addEventListener('keydown', (event) => {
+    switch (event.key) {
+        case "r": case "R":
+            rotateFace(scene.value, CubeFace.R, event.shiftKey); break;
+        case "l": case "L":
+            rotateFace(scene.value, CubeFace.L, event.shiftKey); break;
+        case "u": case "U":
+            rotateFace(scene.value, CubeFace.U, event.shiftKey); break;
+        case "d": case "D":
+            rotateFace(scene.value, CubeFace.D, event.shiftKey); break;
+        case "f": case "F":
+            rotateFace(scene.value, CubeFace.F, event.shiftKey); break;
+        case "b": case "B":
+            rotateFace(scene.value, CubeFace.B, event.shiftKey); break;
+    }
 });
 
 </script>
