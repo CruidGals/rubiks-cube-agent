@@ -1,8 +1,9 @@
-import { MeshBasicMaterial, Vector3 } from "three";
+import { MeshBasicMaterial, Vector3, Object3D } from "three";
+import { ref } from "vue";
 
 export function useRubiksCube() {
     // Cube positions
-    const cubes = [];
+    const cubes = ref([]);
     const separation = 1.05;
     let id = 0;
 
@@ -12,9 +13,10 @@ export function useRubiksCube() {
                 // Don't include the center cube
                 if (x === 0 && y === 0 && z === 0) continue;
 
-                cubes.push({
+                cubes.value.push({
                     id: id++,
-                    position: new Vector3(x, y, z)
+                    position: new Vector3(x, y, z),
+                    object: null as Object3D | null // will be set later when mesh is created
                 });
             }
         }
@@ -30,5 +32,9 @@ export function useRubiksCube() {
     new MeshBasicMaterial({ color: 0x0000ff })  // -Z
     ];
 
-    return { cubes, mats };
+    function setCubeObject(id: number, obj: Object3D) {
+        cubes.value[id].object = obj;
+    }
+
+    return { cubes, mats, setCubeObject };
 }
