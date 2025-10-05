@@ -1,9 +1,11 @@
 import { ref } from "vue";
 import { BaseCameraControls } from "@tresjs/cientos";
 
+// Shared module-scoped state so multiple components can observe/control camera blocking
+const hovering = ref(false);
+const blocking = ref(false);
+
 export function useCameraControls () {
-    const hovering = ref(false);
-    const blocking = ref(false);
 
     function onCameraControl() {
         if (blocking.value) return {left: BaseCameraControls.ACTION.NONE, right: BaseCameraControls.ACTION.NONE};
@@ -24,5 +26,5 @@ export function useCameraControls () {
         window.addEventListener('pointercancel', clear, { once: true });
     }
 
-    return { hovering, onCameraControl, onCubePointerDown };
+    return { hovering, blocking, onCameraControl, onCubePointerDown };
 }
