@@ -8,7 +8,7 @@ const masterGroup = shallowRef<THREE.Group | null>(null);
 
 // Use an enum to denote the different faces of a Rubik's Cube
 export enum CubeFace {
-    R, L, U, D, F, B
+    R, L, U, D, F, B, M, S, E
 }
 
 export function useCubeLogic() {
@@ -26,12 +26,18 @@ export function useCubeLogic() {
                 return cubes.value.filter(cube => cube.position.z > 0.5);
             case CubeFace.B:
                 return cubes.value.filter(cube => cube.position.z < -0.5);
+            case CubeFace.M:
+                return cubes.value.filter(cube => cube.position.x === 0.0);
+            case CubeFace.S:
+                return cubes.value.filter(cube => cube.position.z === 0.0);
+            case CubeFace.E:
+                return cubes.value.filter(cube => cube.position.y === 0.0);
         }
     }
 
     // Rotate a face based on the enum
     // Prime denotes if is counter clockwise (e.g. R', L', U', D', F', B')
-    async function rotateFace(scene: TresScene, face: CubeFace, primed: boolean = false) {
+    function rotateFace(scene: TresScene, face: CubeFace, primed: boolean = false) {
         
         // Make sure there aren't any missing values
         if (!scene || !masterGroup.value) {
@@ -51,7 +57,7 @@ export function useCubeLogic() {
         }
 
         // Flip angle if face is L, D, or B to maintain correct direction
-        if (face === CubeFace.L || face === CubeFace.D || face === CubeFace.B) angle *= -1;
+        if (face === CubeFace.L || face === CubeFace.D || face === CubeFace.B || face === CubeFace.M) angle *= -1;
 
         // Make a pivot object
         const pivot = new THREE.Object3D();
@@ -72,9 +78,9 @@ export function useCubeLogic() {
 
         // Get axis of rotation and rotate
         const axis = new THREE.Vector3(
-            face === CubeFace.R || face === CubeFace.L ? 1 : 0,
-            face === CubeFace.U || face === CubeFace.D ? 1 : 0,
-            face === CubeFace.F || face === CubeFace.B ? 1 : 0
+            face === CubeFace.R || face === CubeFace.L || face === CubeFace.M ? 1 : 0,
+            face === CubeFace.U || face === CubeFace.D || face === CubeFace.E ? 1 : 0,
+            face === CubeFace.F || face === CubeFace.B || face === CubeFace.S ? 1 : 0
         );
         pivot.rotateOnAxis(axis, angle);
 

@@ -26,6 +26,12 @@ window.addEventListener('keydown', (event) => {
             rotateFace(scene.value, CubeFace.F, event.shiftKey); break;
         case "b": case "B":
             rotateFace(scene.value, CubeFace.B, event.shiftKey); break;
+        case "m": case "M":
+            rotateFace(scene.value, CubeFace.M, event.shiftKey); break;
+        case "s": case "S":
+            rotateFace(scene.value, CubeFace.S, event.shiftKey); break;
+        case "e": case "E":
+            rotateFace(scene.value, CubeFace.E, event.shiftKey); break;
     }
 });
 
