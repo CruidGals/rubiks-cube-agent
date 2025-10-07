@@ -7,37 +7,37 @@ import { shallowRef } from "vue";
 const masterGroup = shallowRef<THREE.Group | null>(null);
 
 // Use an enum to denote the different faces of a Rubik's Cube
-export enum CubeFace {
+export enum CubeNotation {
     R, L, U, D, F, B, M, S, E
 }
 
 export function useCubeLogic() {
-    function grabCubesFromFace(face: CubeFace) {
+    function grabCubesFromFace(face: CubeNotation) {
         switch (face) {
-            case CubeFace.R:
+            case CubeNotation.R:
                 return cubes.value.filter(cube => cube.position.x > 0.5);
-            case CubeFace.L:
+            case CubeNotation.L:
                 return cubes.value.filter(cube => cube.position.x < -0.5);
-            case CubeFace.U:
+            case CubeNotation.U:
                 return cubes.value.filter(cube => cube.position.y > 0.5);
-            case CubeFace.D:
+            case CubeNotation.D:
                 return cubes.value.filter(cube => cube.position.y < -0.5);
-            case CubeFace.F:
+            case CubeNotation.F:
                 return cubes.value.filter(cube => cube.position.z > 0.5);
-            case CubeFace.B:
+            case CubeNotation.B:
                 return cubes.value.filter(cube => cube.position.z < -0.5);
-            case CubeFace.M:
+            case CubeNotation.M:
                 return cubes.value.filter(cube => cube.position.x === 0.0);
-            case CubeFace.S:
+            case CubeNotation.S:
                 return cubes.value.filter(cube => cube.position.z === 0.0);
-            case CubeFace.E:
+            case CubeNotation.E:
                 return cubes.value.filter(cube => cube.position.y === 0.0);
         }
     }
 
     // Rotate a face based on the enum
     // Prime denotes if is counter clockwise (e.g. R', L', U', D', F', B')
-    function rotateFace(scene: TresScene, face: CubeFace, primed: boolean = false) {
+    function rotateFace(scene: TresScene, face: CubeNotation, primed: boolean = false) {
         
         // Make sure there aren't any missing values
         if (!scene || !masterGroup.value) {
@@ -57,7 +57,7 @@ export function useCubeLogic() {
         }
 
         // Flip angle if face is L, D, or B to maintain correct direction
-        if (face === CubeFace.L || face === CubeFace.D || face === CubeFace.B || face === CubeFace.M) angle *= -1;
+        if (face === CubeNotation.L || face === CubeNotation.D || face === CubeNotation.B || face === CubeNotation.M) angle *= -1;
 
         // Make a pivot object
         const pivot = new THREE.Object3D();
@@ -78,9 +78,9 @@ export function useCubeLogic() {
 
         // Get axis of rotation and rotate
         const axis = new THREE.Vector3(
-            face === CubeFace.R || face === CubeFace.L || face === CubeFace.M ? 1 : 0,
-            face === CubeFace.U || face === CubeFace.D || face === CubeFace.E ? 1 : 0,
-            face === CubeFace.F || face === CubeFace.B || face === CubeFace.S ? 1 : 0
+            face === CubeNotation.R || face === CubeNotation.L || face === CubeNotation.M ? 1 : 0,
+            face === CubeNotation.U || face === CubeNotation.D || face === CubeNotation.E ? 1 : 0,
+            face === CubeNotation.F || face === CubeNotation.B || face === CubeNotation.S ? 1 : 0
         );
         pivot.rotateOnAxis(axis, angle);
 

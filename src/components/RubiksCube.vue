@@ -3,7 +3,7 @@ import { onMounted, nextTick, markRaw } from 'vue';
 import { useTres } from '@tresjs/core';
 import { useCameraControls } from '../composables/cameraControls';
 import { cubes, useRubiksCube } from '../composables/cubeVisual';
-import { CubeFace, useCubeLogic } from '../composables/cubeLogic';
+import { CubeNotation, useCubeLogic } from '../composables/cubeLogic';
 import { Texture } from 'three';
 
 const { hovering, onCubePointerDown } = useCameraControls();
@@ -15,23 +15,23 @@ const { scene } = useTres();
 window.addEventListener('keydown', (event) => {
     switch (event.key) {
         case "r": case "R":
-            rotateFace(scene.value, CubeFace.R, event.shiftKey); break;
+            rotateFace(scene.value, CubeNotation.R, event.shiftKey); break;
         case "l": case "L":
-            rotateFace(scene.value, CubeFace.L, event.shiftKey); break;
+            rotateFace(scene.value, CubeNotation.L, event.shiftKey); break;
         case "u": case "U":
-            rotateFace(scene.value, CubeFace.U, event.shiftKey); break;
+            rotateFace(scene.value, CubeNotation.U, event.shiftKey); break;
         case "d": case "D":
-            rotateFace(scene.value, CubeFace.D, event.shiftKey); break;
+            rotateFace(scene.value, CubeNotation.D, event.shiftKey); break;
         case "f": case "F":
-            rotateFace(scene.value, CubeFace.F, event.shiftKey); break;
+            rotateFace(scene.value, CubeNotation.F, event.shiftKey); break;
         case "b": case "B":
-            rotateFace(scene.value, CubeFace.B, event.shiftKey); break;
+            rotateFace(scene.value, CubeNotation.B, event.shiftKey); break;
         case "m": case "M":
-            rotateFace(scene.value, CubeFace.M, event.shiftKey); break;
+            rotateFace(scene.value, CubeNotation.M, event.shiftKey); break;
         case "s": case "S":
-            rotateFace(scene.value, CubeFace.S, event.shiftKey); break;
+            rotateFace(scene.value, CubeNotation.S, event.shiftKey); break;
         case "e": case "E":
-            rotateFace(scene.value, CubeFace.E, event.shiftKey); break;
+            rotateFace(scene.value, CubeNotation.E, event.shiftKey); break;
     }
 });
 
