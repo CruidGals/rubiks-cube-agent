@@ -8,7 +8,9 @@ const masterGroup = shallowRef<THREE.Group | null>(null);
 
 // Use an enum to denote the different faces of a Rubik's Cube
 export enum CubeNotation {
-    R, L, U, D, F, B, M, S, E
+    R, L, U, D, F, B, M, S, E, // Regular moves
+    WR, WL, WU, WD, WF, WB, // Wide moves
+    RX, RY, RZ // Rotation moves
 }
 
 export function useCubeLogic() {
@@ -32,6 +34,20 @@ export function useCubeLogic() {
                 return cubes.value.filter(cube => cube.position.z === 0.0);
             case CubeNotation.E:
                 return cubes.value.filter(cube => cube.position.y === 0.0);
+            case CubeNotation.WR:
+                return cubes.value.filter(cube => cube.position.x >= 0.0);
+            case CubeNotation.WL:
+                return cubes.value.filter(cube => cube.position.x <= 0.0);
+            case CubeNotation.WU:
+                return cubes.value.filter(cube => cube.position.y >= 0.0);
+            case CubeNotation.WD:
+                return cubes.value.filter(cube => cube.position.y <= 0.0);
+            case CubeNotation.WF:
+                return cubes.value.filter(cube => cube.position.z >= 0.0);
+            case CubeNotation.WB:
+                return cubes.value.filter(cube => cube.position.z <= 0.0);
+            case CubeNotation.RX: case CubeNotation.RY: case CubeNotation.RZ:
+                return cubes.value
         }
     }
 
@@ -57,7 +73,7 @@ export function useCubeLogic() {
         }
 
         // Flip angle if face is L, D, or B to maintain correct direction
-        if (face === CubeNotation.L || face === CubeNotation.D || face === CubeNotation.B || face === CubeNotation.M) angle *= -1;
+        if (face === CubeNotation.L || face === CubeNotation.D || face === CubeNotation.B || face === CubeNotation.M || face === CubeNotation.WL || face === CubeNotation.WD || face === CubeNotation.WB) angle *= -1;
 
         // Make a pivot object
         const pivot = new THREE.Object3D();
@@ -78,9 +94,9 @@ export function useCubeLogic() {
 
         // Get axis of rotation and rotate
         const axis = new THREE.Vector3(
-            face === CubeNotation.R || face === CubeNotation.L || face === CubeNotation.M ? 1 : 0,
-            face === CubeNotation.U || face === CubeNotation.D || face === CubeNotation.E ? 1 : 0,
-            face === CubeNotation.F || face === CubeNotation.B || face === CubeNotation.S ? 1 : 0
+            face === CubeNotation.R || face === CubeNotation.L || face === CubeNotation.M || face === CubeNotation.WR || face === CubeNotation.WL || face === CubeNotation.RX ? 1 : 0,
+            face === CubeNotation.U || face === CubeNotation.D || face === CubeNotation.E || face === CubeNotation.WU || face === CubeNotation.WD || face === CubeNotation.RY ? 1 : 0,
+            face === CubeNotation.F || face === CubeNotation.B || face === CubeNotation.S || face === CubeNotation.WF || face === CubeNotation.WB || face === CubeNotation.RZ ? 1 : 0
         );
         pivot.rotateOnAxis(axis, angle);
 
