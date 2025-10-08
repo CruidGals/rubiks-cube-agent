@@ -1,7 +1,8 @@
 import { TresScene } from "@tresjs/core";
 import { cubes } from "./cubeVisual";
 import * as THREE from "three";
-import { shallowRef } from "vue";
+import gsap from "gsap";
+import { onUpdated, shallowRef } from "vue";
 
 // Master group which contains all cubes
 const masterGroup = shallowRef<THREE.Group | null>(null);
@@ -12,6 +13,53 @@ export enum CubeNotation {
     WR, WL, WU, WD, WF, WB, // Wide moves
     RX, RY, RZ // Rotation moves
 }
+
+// Helper function to animate rotation
+function animateRotateOnAxis(target, vars) {
+    return new Promise(resolve => {
+        vars.onComplete = resolve; 
+        gsap.to(target, vars);
+    })
+}
+
+// Helper function to get correct cubeNotation
+function letterToCubeNotation(letter: string, wide_move: boolean = false) {
+    switch (letter) {
+        case "r": case "R":
+            if (wide_move) return CubeNotation.WR;
+            return CubeNotation.R;
+        case "l": case "L":
+            if (wide_move) return CubeNotation.WL;
+            return CubeNotation.L;
+        case "u": case "U":
+            if (wide_move) return CubeNotation.WU;
+            return CubeNotation.U;
+        case "d": case "D":
+            if (wide_move) return CubeNotation.WD;
+            return CubeNotation.D;
+        case "f": case "F":
+            if (wide_move) return CubeNotation.WF;
+            return CubeNotation.F;
+        case "b": case "B":
+            if (wide_move) return CubeNotation.WB;
+            return CubeNotation.B;
+        case "m": case "M":
+            return CubeNotation.M;
+        case "s": case "S":
+            return CubeNotation.S;
+        case "e": case "E":
+            return CubeNotation.E;
+        case "x": case "X":
+            return CubeNotation.RX;
+        case "y": case "Y":
+            return CubeNotation.RY;
+        case "z": case "Z":
+            return CubeNotation.RZ;
+    }
+}
+
+// Helper to detect rotation
+let isRotating = false;
 
 export function useCubeLogic() {
     function grabCubesFromFace(face: CubeNotation) {
@@ -53,7 +101,7 @@ export function useCubeLogic() {
 
     // Rotate a face based on the enum
     // Prime denotes if is counter clockwise (e.g. R', L', U', D', F', B')
-    function rotateFace(scene: TresScene, face: CubeNotation, primed: boolean = false) {
+    async function rotateFace(scene: TresScene, face: CubeNotation, primed: boolean = false, rotationTime: number = 0.0) {
         
         // Make sure there aren't any missing values
         if (!scene || !masterGroup.value) {
@@ -98,7 +146,22 @@ export function useCubeLogic() {
             face === CubeNotation.U || face === CubeNotation.D || face === CubeNotation.E || face === CubeNotation.WU || face === CubeNotation.WD || face === CubeNotation.RY ? 1 : 0,
             face === CubeNotation.F || face === CubeNotation.B || face === CubeNotation.S || face === CubeNotation.WF || face === CubeNotation.WB || face === CubeNotation.RZ ? 1 : 0
         );
-        pivot.rotateOnAxis(axis, angle);
+
+        // Animate rotation if there is
+        if (rotationTime > 0.0) {
+            await animateRotateOnAxis({ angle: angle }, {
+                angle: 0,
+                duration: rotationTime,
+                ease: "power1.inOut",
+                onUpdate: function () {
+                    const delta = angle - this.targets()[0].angle;
+                    pivot.rotateOnAxis(axis, delta);
+                    angle = this.targets()[0].angle;
+                }
+            });
+        } else {
+            pivot.rotateOnAxis(axis, angle);
+        }
 
         // Detach cubes from pivot
         cubesToRotate.forEach(cube => {
@@ -123,5 +186,14 @@ export function useCubeLogic() {
         pivot.clear();
     }
 
-    return { masterGroup, rotateFace };
+    async function handleRotation(scene: TresScene, event: KeyboardEvent, rotationTime: number = 0.0) {
+        // Don't turn the cube if it's rotating
+        if (isRotating) return;
+
+        isRotating = true;
+        await rotateFace(scene, letterToCubeNotation(event.key, event.ctrlKey), event.shiftKey, rotationTime);
+        isRotating = false;
+    }
+
+    return { masterGroup, rotateFace, handleRotation };
 }
