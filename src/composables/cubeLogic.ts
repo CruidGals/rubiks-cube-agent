@@ -190,6 +190,9 @@ export function useCubeLogic() {
         // Don't turn the cube if it's rotating
         if (isRotating) return;
 
+        // Make sure its a valid key
+        if (!"rludfbmsexyzRLUDFBMSEXYZ".includes(event.key)) return;
+
         isRotating = true;
         await rotateFace(scene, letterToCubeNotation(event.key, event.ctrlKey), event.shiftKey, rotationTime);
         isRotating = false;
