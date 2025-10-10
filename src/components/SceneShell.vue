@@ -9,7 +9,7 @@ const { onCameraControl } = useCameraControls();
 </script>
 
 <template>
-    <div>
+    <div class="canvas-wrap">
         <TresCanvas window-size >
             <TresPerspectiveCamera :args="[75, 1, 0.1, 1000]" :position="[5,5,5]" :look-at="[0,0,0]"/>
             <CameraControls make-default :mouse-buttons="onCameraControl()" />
@@ -17,3 +17,16 @@ const { onCameraControl } = useCameraControls();
         </TresCanvas>
     </div>
 </template>
+
+<style scoped>
+    .canvas-wrap {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .canvas-wrap canvas {
+        display: block;
+    }
+
+</style>

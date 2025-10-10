@@ -13,7 +13,7 @@ const { masterGroup, rotateFace, handleRotation } = useCubeLogic();
 const { scene } = useTres();
 
 window.addEventListener('keydown', async (event) => {
-    await handleRotation(scene.value, event, 0.5);
+    await handleRotation(scene.value, event);
 });
 
 </script>

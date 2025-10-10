@@ -2,7 +2,7 @@ import { TresScene } from "@tresjs/core";
 import { cubes } from "./cubeVisual";
 import * as THREE from "three";
 import gsap from "gsap";
-import { onUpdated, shallowRef } from "vue";
+import { ref, shallowRef } from "vue";
 
 // Master group which contains all cubes
 const masterGroup = shallowRef<THREE.Group | null>(null);
@@ -60,6 +60,9 @@ function letterToCubeNotation(letter: string, wide_move: boolean = false) {
 
 // Helper to detect rotation
 let isRotating = false;
+
+// Variable to determine turn speed
+export const turnSpeed = ref<number>(0.0);
 
 export function useCubeLogic() {
     function grabCubesFromFace(face: CubeNotation) {
@@ -186,7 +189,7 @@ export function useCubeLogic() {
         pivot.clear();
     }
 
-    async function handleRotation(scene: TresScene, event: KeyboardEvent, rotationTime: number = 0.0) {
+    async function handleRotation(scene: TresScene, event: KeyboardEvent) {
         // Don't turn the cube if it's rotating
         if (isRotating) return;
 
@@ -194,9 +197,9 @@ export function useCubeLogic() {
         if (!"rludfbmsexyzRLUDFBMSEXYZ".includes(event.key)) return;
 
         isRotating = true;
-        await rotateFace(scene, letterToCubeNotation(event.key, event.ctrlKey), event.shiftKey, rotationTime);
+        await rotateFace(scene, letterToCubeNotation(event.key, event.ctrlKey), event.shiftKey, turnSpeed.value / 10);
         isRotating = false;
     }
 
-    return { masterGroup, rotateFace, handleRotation };
+    return { masterGroup, rotateFace, handleRotation, turnSpeed };
 }
