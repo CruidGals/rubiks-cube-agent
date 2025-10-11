@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted, nextTick, markRaw } from 'vue';
+import { markRaw } from 'vue';
 import { useTres } from '@tresjs/core';
 import { useCameraControls } from '../composables/cameraControls';
-import { cubes, useRubiksCube } from '../composables/cubeVisual';
-import { CubeNotation, useCubeLogic } from '../composables/cubeLogic';
-import { Texture } from 'three';
+import { cubes, faceSymbols, showFaceSymbols, useRubiksCube } from '../composables/cubeVisual';
+import { useCubeLogic } from '../composables/cubeLogic';
+import { Text3D } from '@tresjs/cientos';
 
 const { hovering, onCubePointerDown } = useCameraControls();
 const { mats, setCubeObject } = useRubiksCube();
@@ -37,5 +37,19 @@ window.addEventListener('keydown', async (event) => {
         <!-- Lights -->
         <TresAmbientLight :intensity="1.0" />
         <TresPointLight :position="[10,-10,10]" />
+
+        <!-- Text -->
+        <Suspense v-for="symbol in faceSymbols">
+            <Text3D
+                :text="symbol.symbol"
+                font="/fonts/Roboto_Regular.json"
+                :height="0.02"
+                :position="symbol.position"
+                :rotation="symbol.rotation"
+                :visible="showFaceSymbols"
+            >
+                <TresMeshNormalMaterial transparent :opacity="0.5" />
+            </Text3D>
+        </Suspense> 
     </TresScene>
 </template>
