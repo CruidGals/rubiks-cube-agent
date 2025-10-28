@@ -1,5 +1,5 @@
 import { MeshBasicMaterial, Vector3, Object3D } from "three";
-import { ref, shallowRef, markRaw } from "vue";
+import { ref, markRaw } from "vue";
 
 export const cubes = ref<{ id: number; position: Vector3; object: Object3D | null }[]>([]);
 

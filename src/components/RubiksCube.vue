@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { onMounted, nextTick, markRaw } from 'vue';
+import { markRaw } from 'vue';
 import { useTres } from '@tresjs/core';
 import { useCameraControls } from '../composables/cameraControls';
 import { cubes, useRubiksCube } from '../composables/cubeVisual';
-import { CubeNotation, useCubeLogic } from '../composables/cubeLogic';
-import { Texture } from 'three';
+import { useCubeLogic } from '../composables/cubeLogic';
 
 const { hovering, onCubePointerDown } = useCameraControls();
 const { mats, setCubeObject } = useRubiksCube();
-const { masterGroup, rotateFace, handleRotation } = useCubeLogic();
+const { masterGroup, handleRotation } = useCubeLogic();
 
 const { scene } = useTres();
 
