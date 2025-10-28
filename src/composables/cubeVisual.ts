@@ -3,6 +3,24 @@ import { ref, markRaw } from "vue";
 
 export const cubes = ref<{ id: number; position: Vector3; object: Object3D | null }[]>([]);
 
+// Naming schemes
+interface FaceSymbolEntity {
+    symbol: string,
+    position: Vector3,
+    rotation: Euler
+}
+
+export const faceSymbols: FaceSymbolEntity[] = [
+    { symbol: "F", position: new Vector3(0,0,2), rotation: new Euler(0,0,0) },
+    { symbol: "R", position: new Vector3(2,0,0), rotation: new Euler(0,Math.PI / 2,0) },
+    { symbol: "B", position: new Vector3(0,0,-2), rotation: new Euler(0,Math.PI,0) },
+    { symbol: "L", position: new Vector3(-2,0,0), rotation: new Euler(0,(-Math.PI) / 2,0) },
+    { symbol: "U", position: new Vector3(0,2,0), rotation: new Euler((-Math.PI) / 2,0,0) },
+    { symbol: "D", position: new Vector3(0,-2,0), rotation: new Euler((-Math.PI) / 2,0,0) },
+]
+
+export const showFaceSymbols = ref(true);
+
 export function useRubiksCube() {
     // Cube positions
     const separation = 1.05;
@@ -37,5 +55,5 @@ export function useRubiksCube() {
         cubes.value[id].object = obj;
     }
 
-    return { cubes, mats, setCubeObject };
+    return { cubes, mats, faceSymbols, showFaceSymbols, setCubeObject };
 }
