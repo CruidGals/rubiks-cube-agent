@@ -1,8 +1,8 @@
-import { MeshBasicMaterial, Vector3, Object3D, Euler } from "three";
+import { MeshBasicMaterial, Vector3, Object3D, Euler, Quaternion } from "three";
 import { ref, markRaw } from "vue";
 
 export const cubes = ref<{ id: number; position: Vector3; object: Object3D | null }[]>([]);
-export const originState = ref<{ id: number; position: Vector3, rotation: Euler }[]>([]);
+export const originState = ref<{ id: number; position: Vector3, rotation: Euler, quaternion: Quaternion }[]>([]);
 
 // Naming schemes
 interface FaceSymbolEntity {
@@ -42,7 +42,8 @@ export function useRubiksCube() {
                 originState.value.push({
                     id: id++,
                     position: markRaw(new Vector3(x, y, z)),
-                    rotation: markRaw(new Euler())
+                    rotation: markRaw(new Euler()),
+                    quaternion: markRaw(new Quaternion())
                 });
             }
         }
@@ -64,6 +65,7 @@ export function useRubiksCube() {
         // Set the origin states for each cube
         originState.value[id].position = new Vector3(...obj.position);
         originState.value[id].rotation = new Euler(...obj.rotation);
+        originState.value[id].quaternion = new Quaternion(...obj.quaternion);
     }
 
     return { cubes, mats, faceSymbols, showFaceSymbols, setCubeObject };
@@ -72,7 +74,12 @@ export function useRubiksCube() {
 export function resetCube() {
     // Move each cubie back to its origin state
     for (let i = 0; i < cubes.value.length; i++ ) {
+        // Set the logical position
+        cubes.value[i].position.copy(originState.value[i].position);
+
+        // Set actual Object3D positions
         cubes.value[i].object.position.copy(originState.value[i].position);
         cubes.value[i].object.rotation.copy(originState.value[i].rotation);
+        cubes.value[i].object.quaternion.copy(originState.value[i].quaternion);
     }
 }

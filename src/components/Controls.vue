@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import Slider from './Slider.vue';
 import { turnSpeed } from '@/composables/cubeLogic';
-import { showFaceSymbols, useRubiksCube, resetCube } from '@/composables/cubeVisual';
+import { showFaceSymbols, resetCube } from '@/composables/cubeVisual';
+import { isRotating } from '@/composables/cubeLogic';
 import Modal from './Modal.vue';
 import { ref } from 'vue';
 
@@ -52,7 +53,7 @@ const showModal = ref(false);
             </Modal>
         </teleport>
         <button @click="showModal = true">Show Keybinds</button>
-        <button @click="resetCube()">Reset Cube</button>
+        <button @click="isRotating ? null : resetCube()">Reset Cube</button>
     </div>
 </template>
 

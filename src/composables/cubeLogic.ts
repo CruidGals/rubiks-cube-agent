@@ -59,7 +59,7 @@ function letterToCubeNotation(letter: string, wide_move: boolean = false) {
 }
 
 // Helper to detect rotation
-let isRotating = false;
+export const isRotating = ref<boolean>(false);
 
 // Variable to determine turn speed
 export const turnSpeed = ref<number>(0.0);
@@ -191,15 +191,15 @@ export function useCubeLogic() {
 
     async function handleRotation(scene: TresScene, event: KeyboardEvent) {
         // Don't turn the cube if it's rotating
-        if (isRotating) return;
+        if (isRotating.value) return;
 
         // Make sure its a valid key
         if (!"rludfbmsexyzRLUDFBMSEXYZ".includes(event.key)) return;
 
-        isRotating = true;
+        isRotating.value = true;
         await rotateFace(scene, letterToCubeNotation(event.key, event.ctrlKey), event.shiftKey, turnSpeed.value / 10);
-        isRotating = false;
+        isRotating.value = false;
     }
 
-    return { masterGroup, rotateFace, handleRotation, turnSpeed };
+    return { masterGroup, rotateFace, handleRotation, turnSpeed, isRotating };
 }
