@@ -2,6 +2,7 @@ import { MeshBasicMaterial, Vector3, Object3D, Euler } from "three";
 import { ref, markRaw } from "vue";
 
 export const cubes = ref<{ id: number; position: Vector3; object: Object3D | null }[]>([]);
+export const originState = ref<{ id: number; position: Vector3, rotation: Euler }[]>([]);
 
 // Naming schemes
 interface FaceSymbolEntity {
@@ -33,9 +34,15 @@ export function useRubiksCube() {
                 if (x === 0 && y === 0 && z === 0) continue;
 
                 cubes.value.push({
-                    id: id++,
+                    id: id,
                     position: markRaw(new Vector3(x, y, z)),
                     object: null as Object3D | null // will be set later when mesh is created
+                });
+
+                originState.value.push({
+                    id: id++,
+                    position: markRaw(new Vector3(x, y, z)),
+                    rotation: markRaw(new Euler())
                 });
             }
         }
@@ -53,7 +60,19 @@ export function useRubiksCube() {
 
     function setCubeObject(id: number, obj) {
         cubes.value[id].object = obj;
+
+        // Set the origin states for each cube
+        originState.value[id].position = new Vector3(...obj.position);
+        originState.value[id].rotation = new Euler(...obj.rotation);
     }
 
     return { cubes, mats, faceSymbols, showFaceSymbols, setCubeObject };
+}
+
+export function resetCube() {
+    // Move each cubie back to its origin state
+    for (let i = 0; i < cubes.value.length; i++ ) {
+        cubes.value[i].object.position.copy(originState.value[i].position);
+        cubes.value[i].object.rotation.copy(originState.value[i].rotation);
+    }
 }

@@ -8,7 +8,7 @@ import { Text3D } from '@tresjs/cientos';
 
 const { hovering, onCubePointerDown } = useCameraControls();
 const { mats, setCubeObject } = useRubiksCube();
-const { masterGroup, rotateFace, handleRotation } = useCubeLogic();
+const { masterGroup, handleRotation } = useCubeLogic();
 
 const { scene } = useTres();
 
