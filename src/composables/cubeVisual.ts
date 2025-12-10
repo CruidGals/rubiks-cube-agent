@@ -3,6 +3,7 @@ import { ref, markRaw } from "vue";
 
 export const cubes = ref<{ id: number; position: Vector3; object: Object3D | null }[]>([]);
 export const originState = ref<{ id: number; position: Vector3, rotation: Euler, quaternion: Quaternion }[]>([]);
+let originSet = false;
 
 // Naming schemes
 interface FaceSymbolEntity {
@@ -62,10 +63,13 @@ export function useRubiksCube() {
     function setCubeObject(id: number, obj) {
         cubes.value[id].object = obj;
 
+        if (originSet) return;
+
         // Set the origin states for each cube
         originState.value[id].position = new Vector3(...obj.position);
         originState.value[id].rotation = new Euler(...obj.rotation);
         originState.value[id].quaternion = new Quaternion(...obj.quaternion);
+        originSet = true;
     }
 
     return { cubes, mats, faceSymbols, showFaceSymbols, setCubeObject };
