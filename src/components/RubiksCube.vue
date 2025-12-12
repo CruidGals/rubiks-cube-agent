@@ -1,23 +1,34 @@
 <script setup lang="ts">
 import { markRaw } from 'vue';
-import { useTres } from '@tresjs/core';
+import { ref } from 'vue';
 import { useCameraControls } from '../composables/cameraControls';
 import { cubes, faceSymbols, showFaceSymbols, useRubiksCube } from '../composables/cubeVisual';
 import { useCubeLogic } from '../composables/cubeLogic';
 import { Text3D } from '@tresjs/cientos';
+import { useFocus } from '@vueuse/core';
 
 const { hovering, onCubePointerDown } = useCameraControls();
 const { mats, setCubeObject } = useRubiksCube();
 const { masterGroup, handleRotation } = useCubeLogic();
 
+// Handling focus
+const focusedElement = ref<HTMLElement | null>(null);
+const { focused } = useFocus(focusedElement);
+
 window.addEventListener('keydown', async (event) => {
-    await handleRotation(event);
+    // DOn't apply when typing into an input
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        return;
+    }
+
+    if (focused) await handleRotation(event);
 });
 
 </script>
 
 <template>
-    <TresScene>
+    <TresScene ref="focusedElement">
         <TresGroup ref="masterGroup">
             <TresMesh v-for="cube in cubes" 
                 :key="cube.id" 
