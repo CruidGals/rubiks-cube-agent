@@ -1,0 +1,1 @@
+export function isLowerCase(char: string): boolean { return char === char.toLowerCase() && char !== char.toUpperCase(); }

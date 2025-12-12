@@ -3,6 +3,7 @@ import { cubes } from "./cubeVisual";
 import * as THREE from "three";
 import gsap from "gsap";
 import { ref, shallowRef } from "vue";
+import { isLowerCase } from "./util";
 
 // Master group which contains all cubes
 const masterGroup = shallowRef<THREE.Group | null>(null);
@@ -63,6 +64,41 @@ function letterToCubeNotation(letter: string, wide_move: boolean = false) {
         case "z": case "Z":
             return CubeNotation.RZ;
     }
+}
+
+// Read a set of moves (in a string), and return a queue
+function readMoves(moves: string) {
+    // Strategy: skip all whitespace
+    // character must be a move or number 2
+    let cubeMoves: CubeMove[] = [];
+
+    for (let i = 0; i < moves.length; i++ ) {
+        let move = moves[i];
+
+        // Invalid character, skip and return nothing (not including 2 or ' because we parse that while parsing the move)
+        if (!"rludfbxyzRLUDFBMSE".includes(move)) return null;
+
+        // Skip spaces
+        if (move === " ") continue;
+
+        // Parse move
+        let cubeMove: CubeMove = {face: letterToCubeNotation(move, isLowerCase(move)), prime: false, double: false};
+
+        // Check if there's a prime or 2 after
+        if (i < (moves.length - 1)) {
+            if (moves[i+1] === "'") { cubeMove.prime = true;  i++; }
+            if (moves[i+1] === "2") { cubeMove.double = true; i++; }
+        }
+
+        // Add it to the queue
+        cubeMoves.push(cubeMove);
+
+        console.log(cubeMove);
+    }
+
+    // Reverse the list so you can use like a stack
+    cubeMoves.reverse();
+    return cubeMoves;
 }
 
 // Helper to detect rotation
