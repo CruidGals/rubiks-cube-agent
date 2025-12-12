@@ -12,7 +12,14 @@ export enum CubeNotation {
     R, L, U, D, F, B, M, S, E, // Regular moves
     WR, WL, WU, WD, WF, WB, // Wide moves
     RX, RY, RZ // Rotation moves
-}
+};
+
+// Type to represent movement
+type CubeMove = {
+    face: CubeNotation,
+    prime: boolean,
+    double: boolean
+};
 
 // Helper function to animate rotation
 function animateRotateOnAxis(target, vars) {
@@ -104,7 +111,7 @@ export function useCubeLogic() {
 
     // Rotate a face based on the enum
     // Prime denotes if is counter clockwise (e.g. R', L', U', D', F', B')
-    async function rotateFace(scene: TresScene, face: CubeNotation, primed: boolean = false, rotationTime: number = 0.0) {
+    async function rotateFace(scene: TresScene, move: CubeMove, rotationTime: number = 0.0) {
         
         // Make sure there aren't any missing values
         if (!scene || !masterGroup.value) {
@@ -112,9 +119,12 @@ export function useCubeLogic() {
             return;
         }
 
-        const cubes = grabCubesFromFace(face);
+        const cubes = grabCubesFromFace(move.face);
         const cubesToRotate = cubes.map(cube => cube.object);
-        let angle = primed ? Math.PI / 2 : -Math.PI / 2;
+        let angle = move.prime ? Math.PI / 2 : -Math.PI / 2;
+
+        // If double move, double angle
+        if (move.double) angle *= 2;
 
         // Check if any cubes are null
         if (cubesToRotate.includes(null)) {
@@ -124,7 +134,7 @@ export function useCubeLogic() {
         }
 
         // Flip angle if face is L, D, or B to maintain correct direction
-        if (face === CubeNotation.L || face === CubeNotation.D || face === CubeNotation.B || face === CubeNotation.M || face === CubeNotation.WL || face === CubeNotation.WD || face === CubeNotation.WB) angle *= -1;
+        if (move.face === CubeNotation.L || move.face === CubeNotation.D || move.face === CubeNotation.B || move.face === CubeNotation.M || move.face === CubeNotation.WL || move.face === CubeNotation.WD || move.face === CubeNotation.WB) angle *= -1;
 
         // Make a pivot object
         const pivot = new THREE.Object3D();
@@ -145,9 +155,9 @@ export function useCubeLogic() {
 
         // Get axis of rotation and rotate
         const axis = new THREE.Vector3(
-            face === CubeNotation.R || face === CubeNotation.L || face === CubeNotation.M || face === CubeNotation.WR || face === CubeNotation.WL || face === CubeNotation.RX ? 1 : 0,
-            face === CubeNotation.U || face === CubeNotation.D || face === CubeNotation.E || face === CubeNotation.WU || face === CubeNotation.WD || face === CubeNotation.RY ? 1 : 0,
-            face === CubeNotation.F || face === CubeNotation.B || face === CubeNotation.S || face === CubeNotation.WF || face === CubeNotation.WB || face === CubeNotation.RZ ? 1 : 0
+            move.face === CubeNotation.R || move.face === CubeNotation.L || move.face === CubeNotation.M || move.face === CubeNotation.WR || move.face === CubeNotation.WL || move.face === CubeNotation.RX ? 1 : 0,
+            move.face === CubeNotation.U || move.face === CubeNotation.D || move.face === CubeNotation.E || move.face === CubeNotation.WU || move.face === CubeNotation.WD || move.face === CubeNotation.RY ? 1 : 0,
+            move.face === CubeNotation.F || move.face === CubeNotation.B || move.face === CubeNotation.S || move.face === CubeNotation.WF || move.face === CubeNotation.WB || move.face === CubeNotation.RZ ? 1 : 0
         );
 
         // Animate rotation if there is
@@ -197,7 +207,8 @@ export function useCubeLogic() {
         if (!"rludfbmsexyzRLUDFBMSEXYZ".includes(event.key)) return;
 
         isRotating.value = true;
-        await rotateFace(scene, letterToCubeNotation(event.key, event.ctrlKey), event.shiftKey, turnSpeed.value / 10);
+        let move = {face: letterToCubeNotation(event.key, event.ctrlKey), prime: event.shiftKey, double: false};
+        await rotateFace(scene, move, turnSpeed.value / 10);
         isRotating.value = false;
     }
 
