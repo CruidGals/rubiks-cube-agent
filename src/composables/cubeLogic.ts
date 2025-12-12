@@ -77,7 +77,7 @@ function readMoves(moves: string) {
             let move = line[i];
 
             // If found a comment (double slash), just end the loop
-            if (move === "/" && line[i+1] === "/") break;
+            if (move === "/" && (i < (line.length - 1) && line[i+1] === "/")) break;
 
             // Skip spaces, newline, and tabs
             if (" \t\n".includes(move)) continue;
@@ -91,7 +91,10 @@ function readMoves(moves: string) {
             // Check if there's a prime or 2 after
             if (i < (line.length - 1)) {
                 if (line[i+1] === "'") { cubeMove.prime = true;  i++; }
-                if (line[i+1] === "2") { cubeMove.double = true; i++; }
+                if (line[i+1] === "2") { 
+                    cubeMove.double = true; i++; 
+                    if (line[i+1] === "'") { cubeMove.prime = true; i++; }
+                }
             }
 
             // Add it to list
