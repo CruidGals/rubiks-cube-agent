@@ -69,28 +69,34 @@ function letterToCubeNotation(letter: string, wide_move: boolean = false) {
 function readMoves(moves: string) {
     // Strategy: skip all whitespace
     // character must be a move or number 2
+    let lines: string[] = moves.split(/\r?\n|\r|\n/g);
     let cubeMoves: CubeMove[] = [];
 
-    for (let i = 0; i < moves.length; i++ ) {
-        let move = moves[i];
+    for (const line of lines) {
+        for (let i = 0; i < line.length; i++ ) {
+            let move = line[i];
 
-        // Skip spaces
-        if (move === " ") continue;
+            // If found a comment (double slash), just end the loop
+            if (move === "/" && line[i+1] === "/") break;
 
-        // Invalid character, skip and return nothing (not including 2 or ' because we parse that while parsing the move)
-        if (!"rludfbxyzRLUDFBMSE".includes(move)) return null;
+            // Skip spaces, newline, and tabs
+            if (" \t\n".includes(move)) continue;
+            
+            // Invalid character, skip and return nothing (not including 2 or ' because we parse that while parsing the move)
+            if (!"rludfbxyzRLUDFBMSE".includes(move)) return null;
 
-        // Parse move
-        let cubeMove: CubeMove = {face: letterToCubeNotation(move, isLowerCase(move)), prime: false, double: false};
+            // Parse move
+            let cubeMove: CubeMove = {face: letterToCubeNotation(move, isLowerCase(move)), prime: false, double: false};
 
-        // Check if there's a prime or 2 after
-        if (i < (moves.length - 1)) {
-            if (moves[i+1] === "'") { cubeMove.prime = true;  i++; }
-            if (moves[i+1] === "2") { cubeMove.double = true; i++; }
+            // Check if there's a prime or 2 after
+            if (i < (line.length - 1)) {
+                if (line[i+1] === "'") { cubeMove.prime = true;  i++; }
+                if (line[i+1] === "2") { cubeMove.double = true; i++; }
+            }
+
+            // Add it to list
+            cubeMoves.push(cubeMove);
         }
-
-        // Add it to list
-        cubeMoves.push(cubeMove);
     }
 
     return cubeMoves;

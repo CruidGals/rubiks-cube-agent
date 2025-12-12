@@ -60,8 +60,10 @@ const moveSet = ref('');
         <button @click="showModal = true">Show Keybinds</button>
         <button @click="isRotating ? null : resetCube()">Reset Cube</button>
 
+        <div class="spacer"></div>
+
         <!-- Move the cube by giving it a set of moves -->
-        <input v-model="moveSet" placeholder="R U R' U' ..."/>
+        <textarea v-model="moveSet" placeholder="R U R' U' ..." style="max-width: 160px;"/>
         <button @click="playMoves(moveSet)">Apply Moves</button>
     </div>
 </template>
@@ -71,6 +73,8 @@ const moveSet = ref('');
         display: flex;
         flex-direction: column;
         gap: 10px;
+
+        height: 100%;
 
         position: absolute;
         top: 0;
@@ -95,5 +99,11 @@ const moveSet = ref('');
 
     .bold {
         font-weight: 900;
+    }
+
+    .spacer {
+        height: 50px;
+        padding: 0;
+        margin: 0;
     }
 </style>
