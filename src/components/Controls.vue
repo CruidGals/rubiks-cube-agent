@@ -2,11 +2,16 @@
 import Slider from './Slider.vue';
 import { turnSpeed } from '@/composables/cubeLogic';
 import { showFaceSymbols, resetCube } from '@/composables/cubeVisual';
-import { isRotating } from '@/composables/cubeLogic';
+import { useCubeLogic, isRotating } from '@/composables/cubeLogic';
 import Modal from './Modal.vue';
 import { ref } from 'vue';
 
+// const { scene } = useTres();
 const showModal = ref(false);
+
+// For playing moves
+const { playMoves } = useCubeLogic();
+const moveSet = ref('');
 
 </script>
 
@@ -54,6 +59,10 @@ const showModal = ref(false);
         </teleport>
         <button @click="showModal = true">Show Keybinds</button>
         <button @click="isRotating ? null : resetCube()">Reset Cube</button>
+
+        <!-- Move the cube by giving it a set of moves -->
+        <input v-model="moveSet" placeholder="R U R' U' ..."/>
+        <button @click="playMoves(moveSet)">Apply Moves</button>
     </div>
 </template>
 

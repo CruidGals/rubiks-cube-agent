@@ -8,16 +8,10 @@ import { Text3D } from '@tresjs/cientos';
 
 const { hovering, onCubePointerDown } = useCameraControls();
 const { mats, setCubeObject } = useRubiksCube();
-const { masterGroup, handleRotation, playMoves } = useCubeLogic();
-
-const { scene } = useTres();
+const { masterGroup, handleRotation } = useCubeLogic();
 
 window.addEventListener('keydown', async (event) => {
-    if (event.key == " ") {
-        await playMoves(scene.value, "F' L2 F' D2 L2 B2 U2 R2 B F2 L2 R2 U L2 U L D B U B2 F");
-    } else {
-        await handleRotation(scene.value, event);
-    }
+    await handleRotation(event);
 });
 
 </script>

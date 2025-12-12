@@ -1,4 +1,3 @@
-import { TresScene } from "@tresjs/core";
 import { cubes } from "./cubeVisual";
 import * as THREE from "three";
 import gsap from "gsap";
@@ -146,10 +145,10 @@ export function useCubeLogic() {
 
     // Rotate a face based on the enum
     // Prime denotes if is counter clockwise (e.g. R', L', U', D', F', B')
-    async function rotateFace(scene: TresScene, move: CubeMove, rotationTime: number = 0.0) {
+    async function rotateFace(move: CubeMove, rotationTime: number = 0.0) {
         
         // Make sure there aren't any missing values
-        if (!scene || !masterGroup.value) {
+        if (!masterGroup.value) {
             console.warn("Scene or master group not ready");
             return;
         }
@@ -234,7 +233,7 @@ export function useCubeLogic() {
         pivot.clear();
     }
 
-    async function handleRotation(scene: TresScene, event: KeyboardEvent) {
+    async function handleRotation(event: KeyboardEvent) {
         // Don't turn the cube if it's rotating or playing moves
         if (isRotating.value || playingMoves.value) return;
 
@@ -243,12 +242,12 @@ export function useCubeLogic() {
 
         isRotating.value = true;
         let move = {face: letterToCubeNotation(event.key, event.ctrlKey), prime: event.shiftKey, double: false};
-        await rotateFace(scene, move, turnSpeed.value / 10);
+        await rotateFace(move, turnSpeed.value / 10);
         isRotating.value = false;
     }
 
     // Plays a set of moves given
-    async function playMoves(scene: TresScene, moves: string) {
+    async function playMoves(moves: string) {
         // If already playing a set of moves, don't do it
         if (playingMoves.value) return;
 
@@ -264,7 +263,7 @@ export function useCubeLogic() {
         // Begin playing the moves to the user
         playingMoves.value = true;
         for (const cubeMove of cubeMoves) {
-            await rotateFace(scene, cubeMove, turnSpeed.value / 10);
+            await rotateFace(cubeMove, turnSpeed.value / 10);
         }
         playingMoves.value = false;
     }
