@@ -75,11 +75,11 @@ function readMoves(moves: string) {
     for (let i = 0; i < moves.length; i++ ) {
         let move = moves[i];
 
-        // Invalid character, skip and return nothing (not including 2 or ' because we parse that while parsing the move)
-        if (!"rludfbxyzRLUDFBMSE".includes(move)) return null;
-
         // Skip spaces
         if (move === " ") continue;
+
+        // Invalid character, skip and return nothing (not including 2 or ' because we parse that while parsing the move)
+        if (!"rludfbxyzRLUDFBMSE".includes(move)) return null;
 
         // Parse move
         let cubeMove: CubeMove = {face: letterToCubeNotation(move, isLowerCase(move)), prime: false, double: false};
@@ -90,19 +90,18 @@ function readMoves(moves: string) {
             if (moves[i+1] === "2") { cubeMove.double = true; i++; }
         }
 
-        // Add it to the queue
+        // Add it to list
         cubeMoves.push(cubeMove);
-
-        console.log(cubeMove);
     }
 
-    // Reverse the list so you can use like a stack
-    cubeMoves.reverse();
     return cubeMoves;
 }
 
 // Helper to detect rotation
 export const isRotating = ref<boolean>(false);
+
+// Detector if current playing an entered set of moves
+const playingMoves = ref<boolean>(false);
 
 // Variable to determine turn speed
 export const turnSpeed = ref<number>(0.0);
@@ -236,8 +235,8 @@ export function useCubeLogic() {
     }
 
     async function handleRotation(scene: TresScene, event: KeyboardEvent) {
-        // Don't turn the cube if it's rotating
-        if (isRotating.value) return;
+        // Don't turn the cube if it's rotating or playing moves
+        if (isRotating.value || playingMoves.value) return;
 
         // Make sure its a valid key
         if (!"rludfbmsexyzRLUDFBMSEXYZ".includes(event.key)) return;
@@ -248,5 +247,27 @@ export function useCubeLogic() {
         isRotating.value = false;
     }
 
-    return { masterGroup, rotateFace, handleRotation, turnSpeed, isRotating };
+    // Plays a set of moves given
+    async function playMoves(scene: TresScene, moves: string) {
+        // If already playing a set of moves, don't do it
+        if (playingMoves.value) return;
+
+        // Grab the moves
+        let cubeMoves = readMoves(moves);
+
+        // If invalid, don't continue
+        if (cubeMoves == null) {
+            console.error("Error: invalid move combination.");
+            return;
+        }
+
+        // Begin playing the moves to the user
+        playingMoves.value = true;
+        for (const cubeMove of cubeMoves) {
+            await rotateFace(scene, cubeMove, turnSpeed.value / 10);
+        }
+        playingMoves.value = false;
+    }
+
+    return { masterGroup, rotateFace, handleRotation, playMoves, turnSpeed, isRotating };
 }
