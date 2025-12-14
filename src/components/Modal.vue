@@ -6,6 +6,10 @@ function handleBackdropClick(event: MouseEvent) {
         isOpen.value = false;
     }
 }
+
+window.addEventListener('keydown', async (event) => {
+    if (event.key === "Escape") isOpen.value = false;
+});
 </script>
 
 <template>
