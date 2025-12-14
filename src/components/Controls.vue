@@ -5,6 +5,7 @@ import { showFaceSymbols, resetCube } from '@/composables/cubeVisual';
 import { useCubeLogic, isRotating } from '@/composables/cubeLogic';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import MarkdownIt from 'markdown-it';
 import Modal from './Modal.vue';
 import { ref } from 'vue';
 
@@ -18,14 +19,22 @@ const moveSet = ref('');
 // Hiding overlay
 const overlayFolded = ref(false);
 
+// Markdown for the modal
+const md = new MarkdownIt();
+import keybindMd from '../assets/keybinds.md?raw';
+const modalContent = md.render(keybindMd);
+
 </script>
 
 <template>
     <div ref="controlsRef" class="controls">
-        <div ref="overlayRef" class="overlay" :style="{display: `${overlayFolded ? 'none' : 'flex'}`}">
+        <div ref="overlayRef" class="overlay" v-if="!overlayFolded">
             <h2>Turn Speed {{ turnSpeed / 10 }}s</h2>
             <Slider />
-            <label class>
+
+            <div class="spacer"></div>
+
+            <label>
                 Show Face Symbols <input type="checkbox" v-model="showFaceSymbols">
             </label>
 
@@ -33,44 +42,18 @@ const overlayFolded = ref(false);
             <teleport to="body">
                 <Modal v-model="showModal">
                     <div class="modal-content">
-                        <h1>Keybinds</h1>
-
-                        <div style="display: flex; gap: 20px; justify-content: center;">
-                            <div style="display: flex; flex-direction: column;">
-                                <p><span class="bold">R</span>: Move R face CW</p>
-                                <p><span class="bold">L</span>: Move L face CW</p>
-                                <p><span class="bold">F</span>: Move F face CW</p>
-                                <p><span class="bold">B</span>: Move B face CW</p>
-                                <p><span class="bold">U</span>: Move U face CW</p>
-                                <p><span class="bold">D</span>: Move D face CW</p>
-                            </div>
-                            <div style="display: flex; flex-direction: column;">
-                                <p><span class="bold">M</span>: Move the M layer CW</p>
-                                <p><span class="bold">S</span>: Move the S layer CW</p>
-                                <p><span class="bold">E</span>: Move the E layer CW</p>
-                            </div>
-                            <div style="display: flex; flex-direction: column;">
-                                <p><span class="bold">X</span>: Rotate cube CW from R Face</p>
-                                <p><span class="bold">Y</span>: Rotate cube CW from U Face</p>
-                                <p><span class="bold">Z</span>: Rotate cube CW from F Face</p>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <p>Holding <span class="bold">Shift</span> will reverse the direction to CCW.</p>
-                            <p>Holding <span class="bold">Left Ctrl</span> will perform wide moves.</p>
-                        </div>
+                        <div v-html="modalContent"></div>
                     </div>
                 </Modal>
             </teleport>
-            <button @click="showModal = true">Show Keybinds</button>
-            <button @click="isRotating ? null : resetCube()">Reset Cube</button>
+            <div class="button" @click="showModal = true">Show Keybinds</div>
+            <div class="button" @click="isRotating ? null : resetCube()">Reset Cube</div>
 
             <div class="spacer"></div>
 
             <!-- Move the cube by giving it a set of moves -->
-            <textarea v-model="moveSet" placeholder="R U R' U' ..." style="max-width: 160px;"/>
-            <button @click="playMoves(moveSet)">Apply Moves</button>
+            <textarea v-model="moveSet" placeholder="R U R' U' ..." style="max-width: 160px; min-width: 160px;"/>
+            <div class="button" @click="playMoves(moveSet)">Apply Moves</div>
         </div>
 
         <div @click="overlayFolded = !overlayFolded;" class="fold-button" >
@@ -112,9 +95,21 @@ const overlayFolded = ref(false);
 
     }
 
+    .button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background-color: rgb(60, 60, 60);
+        border-radius: 5px;
+
+        transition: all 0.1s ease-out;
+    }
+
     .modal-content {    
         background-color: black;
         color: white;
+        margin: 20vw;
         padding: 50px;
         border-radius: 10px;
 
@@ -130,7 +125,7 @@ const overlayFolded = ref(false);
     }
 
     .spacer {
-        height: 50px;
+        height: 20px;
         padding: 0;
         margin: 0;
     }
@@ -139,4 +134,10 @@ const overlayFolded = ref(false);
     .fold-button:hover {
         cursor: grab;
     }
+
+    .button:hover {
+        background-color: rgb(80,80,80);
+        cursor: grab;
+    }
+
 </style>
