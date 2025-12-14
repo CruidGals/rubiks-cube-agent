@@ -1,4 +1,4 @@
-import { cubes } from "./cubeVisual";
+import { meshes } from "./cubeVisual";
 import * as THREE from "three";
 import gsap from "gsap";
 import { ref, shallowRef } from "vue";
@@ -116,39 +116,41 @@ export const turnSpeed = ref<number>(0.0);
 
 export function useCubeLogic() {
     function grabCubesFromFace(face: CubeNotation) {
+        let cubes = meshes.value.map(mesh => mesh.cube)
+
         switch (face) {
             case CubeNotation.R:
-                return cubes.value.filter(cube => cube.position.x > 0.5);
+                return cubes.filter(cube => cube.position.x > 0.5);
             case CubeNotation.L:
-                return cubes.value.filter(cube => cube.position.x < -0.5);
+                return cubes.filter(cube => cube.position.x < -0.5);
             case CubeNotation.U:
-                return cubes.value.filter(cube => cube.position.y > 0.5);
+                return cubes.filter(cube => cube.position.y > 0.5);
             case CubeNotation.D:
-                return cubes.value.filter(cube => cube.position.y < -0.5);
+                return cubes.filter(cube => cube.position.y < -0.5);
             case CubeNotation.F:
-                return cubes.value.filter(cube => cube.position.z > 0.5);
+                return cubes.filter(cube => cube.position.z > 0.5);
             case CubeNotation.B:
-                return cubes.value.filter(cube => cube.position.z < -0.5);
+                return cubes.filter(cube => cube.position.z < -0.5);
             case CubeNotation.M:
-                return cubes.value.filter(cube => cube.position.x === 0.0);
+                return cubes.filter(cube => cube.position.x === 0.0);
             case CubeNotation.S:
-                return cubes.value.filter(cube => cube.position.z === 0.0);
+                return cubes.filter(cube => cube.position.z === 0.0);
             case CubeNotation.E:
-                return cubes.value.filter(cube => cube.position.y === 0.0);
+                return cubes.filter(cube => cube.position.y === 0.0);
             case CubeNotation.WR:
-                return cubes.value.filter(cube => cube.position.x >= 0.0);
+                return cubes.filter(cube => cube.position.x >= 0.0);
             case CubeNotation.WL:
-                return cubes.value.filter(cube => cube.position.x <= 0.0);
+                return cubes.filter(cube => cube.position.x <= 0.0);
             case CubeNotation.WU:
-                return cubes.value.filter(cube => cube.position.y >= 0.0);
+                return cubes.filter(cube => cube.position.y >= 0.0);
             case CubeNotation.WD:
-                return cubes.value.filter(cube => cube.position.y <= 0.0);
+                return cubes.filter(cube => cube.position.y <= 0.0);
             case CubeNotation.WF:
-                return cubes.value.filter(cube => cube.position.z >= 0.0);
+                return cubes.filter(cube => cube.position.z >= 0.0);
             case CubeNotation.WB:
-                return cubes.value.filter(cube => cube.position.z <= 0.0);
+                return cubes.filter(cube => cube.position.z <= 0.0);
             case CubeNotation.RX: case CubeNotation.RY: case CubeNotation.RZ:
-                return cubes.value
+                return cubes
         }
     }
 

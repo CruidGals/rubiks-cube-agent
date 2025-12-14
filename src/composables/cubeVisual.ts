@@ -1,7 +1,13 @@
 import { MeshBasicMaterial, Vector3, Object3D, Euler, Quaternion } from "three";
 import { ref, markRaw } from "vue";
 
-export const cubes = ref<{ id: number; position: Vector3; object: Object3D | null }[]>([]);
+type Cube = {
+    id: number;
+    position: Vector3;
+    object: Object3D | null;
+}
+
+export const meshes = ref<{cube: Cube; mats: MeshBasicMaterial[]}[]>([]);
 export const originState = ref<{ id: number; position: Vector3, rotation: Euler, quaternion: Quaternion }[]>([]);
 let originSet = false;
 
@@ -23,6 +29,20 @@ export const faceSymbols: FaceSymbolEntity[] = [
 
 export const showFaceSymbols = ref(true);
 
+// Gives the correct material based on position of cubies
+function populateMaterial(x: number, y: number, z: number) {
+    let mats: MeshBasicMaterial[] = [];
+
+    mats.push(x > 0.0 ? new MeshBasicMaterial({ color: 0xff0000 }) : new MeshBasicMaterial({ color: 0x000000 }));
+    mats.push(x < 0.0 ? new MeshBasicMaterial({ color: 0xffa500 }) : new MeshBasicMaterial({ color: 0x000000 }));
+    mats.push(y > 0.0 ? new MeshBasicMaterial({ color: 0xffffff }) : new MeshBasicMaterial({ color: 0x000000 }));
+    mats.push(y < 0.0 ? new MeshBasicMaterial({ color: 0xffff00 }) : new MeshBasicMaterial({ color: 0x000000 }));
+    mats.push(z > 0.0 ? new MeshBasicMaterial({ color: 0x008000 }) : new MeshBasicMaterial({ color: 0x000000 }));
+    mats.push(z < 0.0 ? new MeshBasicMaterial({ color: 0x0000ff }) : new MeshBasicMaterial({ color: 0x000000 }));
+
+    return mats;
+}
+
 export function useRubiksCube() {
     // Cube positions
     const separation = 1.05;
@@ -32,12 +52,11 @@ export function useRubiksCube() {
         for (let y = -separation; y <= separation; y += separation) {
             for (let z = -separation; z <= separation; z += separation) {
                 // Don't include the center cube
-                if (x === 0 && y === 0 && z === 0) continue;
+                if (x === 0 && y === 0 && z === 0) continue;                
 
-                cubes.value.push({
-                    id: id,
-                    position: markRaw(new Vector3(x, y, z)),
-                    object: null as Object3D | null // will be set later when mesh is created
+                meshes.value.push({
+                    cube: {id: id, position: markRaw(new Vector3(x, y, z)), object: null as Object3D | null /* will be set later when mesh is created */ },
+                    mats: populateMaterial(x, y, z)
                 });
 
                 originState.value.push({
@@ -61,7 +80,7 @@ export function useRubiksCube() {
     ];
 
     function setCubeObject(id: number, obj) {
-        cubes.value[id].object = obj;
+        meshes.value[id].cube.object = obj;
 
         if (originSet) return;
 
@@ -72,18 +91,18 @@ export function useRubiksCube() {
         originSet = true;
     }
 
-    return { cubes, mats, faceSymbols, showFaceSymbols, setCubeObject };
+    return { meshes, faceSymbols, showFaceSymbols, setCubeObject };
 }
 
 export function resetCube() {
     // Move each cubie back to its origin state
-    for (let i = 0; i < cubes.value.length; i++ ) {
+    for (let i = 0; i < meshes.value.length; i++ ) {
         // Set the logical position
-        cubes.value[i].position.copy(originState.value[i].position);
+        meshes.value[i].cube.position.copy(originState.value[i].position);
 
         // Set actual Object3D positions
-        cubes.value[i].object.position.copy(originState.value[i].position);
-        cubes.value[i].object.rotation.copy(originState.value[i].rotation);
-        cubes.value[i].object.quaternion.copy(originState.value[i].quaternion);
+        meshes.value[i].cube.object.position.copy(originState.value[i].position);
+        meshes.value[i].cube.object.rotation.copy(originState.value[i].rotation);
+        meshes.value[i].cube.object.quaternion.copy(originState.value[i].quaternion);
     }
 }

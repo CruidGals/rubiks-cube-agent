@@ -2,13 +2,13 @@
 import { markRaw } from 'vue';
 import { ref } from 'vue';
 import { useCameraControls } from '../composables/cameraControls';
-import { cubes, faceSymbols, showFaceSymbols, useRubiksCube } from '../composables/cubeVisual';
+import { faceSymbols, showFaceSymbols, useRubiksCube } from '../composables/cubeVisual';
 import { useCubeLogic } from '../composables/cubeLogic';
 import { Text3D } from '@tresjs/cientos';
 import { useFocus } from '@vueuse/core';
 
 const { hovering, onCubePointerDown } = useCameraControls();
-const { mats, setCubeObject } = useRubiksCube();
+const { meshes, setCubeObject } = useRubiksCube();
 const { masterGroup, handleRotation } = useCubeLogic();
 
 // Handling focus
@@ -30,11 +30,11 @@ window.addEventListener('keydown', async (event) => {
 <template>
     <TresScene ref="focusedElement">
         <TresGroup ref="masterGroup">
-            <TresMesh v-for="cube in cubes" 
-                :key="cube.id" 
-                :position="cube.position" 
-                :material="mats" 
-                :ref="(el) => setCubeObject(cube.id, markRaw(el))"
+            <TresMesh v-for="mesh in meshes" 
+                :key="mesh.cube.id" 
+                :position="mesh.cube.position" 
+                :material="mesh.mats" 
+                :ref="(el) => setCubeObject(mesh.cube.id, markRaw(el))"
                 @pointerenter="hovering = true" 
                 @pointerleave="hovering = false" 
                 @pointerdown="onCubePointerDown"
