@@ -5,11 +5,17 @@ import { useCameraControls } from '../composables/cameraControls';
 import { faceSymbols, showFaceSymbols, useRubiksCube } from '../composables/cubeVisual';
 import { useCubeLogic } from '../composables/cubeLogic';
 import { Text3D } from '@tresjs/cientos';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { useFocus } from '@vueuse/core';
 
 const { hovering, onCubePointerDown } = useCameraControls();
 const { meshes, setCubeObject } = useRubiksCube();
 const { masterGroup, handleRotation } = useCubeLogic();
+
+// Font
+import robotoJson from '@/assets/fonts/Roboto_Regular.json';
+const loader = new FontLoader();
+const font = loader.parse(robotoJson as any)
 
 // Handling focus
 const focusedElement = ref<HTMLElement | null>(null);
@@ -51,7 +57,7 @@ window.addEventListener('keydown', async (event) => {
         <Suspense v-for="symbol in faceSymbols">
             <Text3D
                 :text="symbol.symbol"
-                font="/fonts/Roboto_Regular.json"
+                :font="font"
                 :height="0.02"
                 :position="symbol.position"
                 :rotation="symbol.rotation"
