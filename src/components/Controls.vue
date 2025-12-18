@@ -4,7 +4,7 @@ import { turnSpeed } from '@/composables/cubeLogic';
 import { showFaceSymbols, resetCube } from '@/composables/cubeVisual';
 import { useCubeLogic, isRotating } from '@/composables/cubeLogic';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faChevronRight, faPlay } from '@fortawesome/free-solid-svg-icons';
 import MarkdownIt from 'markdown-it';
 import Modal from './Modal.vue';
 import { ref } from 'vue';
@@ -53,7 +53,11 @@ const modalContent = md.render(keybindMd);
 
             <!-- Move the cube by giving it a set of moves -->
             <textarea v-model="moveSet" placeholder="R U R' U' ..." style="max-width: 160px; min-width: 160px;"/>
-            <div class="button" @click="playMoves(moveSet)">Apply Moves</div>
+            <div class="play-button-row">
+                <div class="button play-button"><FontAwesomeIcon :icon="faChevronLeft" /></div>
+                <div class="button play-button"><FontAwesomeIcon :icon="faPlay" /></div>
+                <div class="button play-button"><FontAwesomeIcon :icon="faChevronRight" /></div>
+            </div>
         </div>
 
         <div @click="overlayFolded = !overlayFolded;" class="fold-button" >
@@ -103,6 +107,7 @@ const modalContent = md.render(keybindMd);
         background-color: rgb(60, 60, 60);
         border-radius: 5px;
 
+        width: 100%;
         transition: all 0.1s ease-out;
     }
 
@@ -128,6 +133,19 @@ const modalContent = md.render(keybindMd);
         height: 20px;
         padding: 0;
         margin: 0;
+    }
+
+    /* Play button specifics */
+    .play-button-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .play-button {
+        padding: 5px;
     }
 
     /* Interactive style */
