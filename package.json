@@ -17,20 +17,17 @@
     "@fortawesome/free-regular-svg-icons": "^7.1.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/vue-fontawesome": "^3.1.2",
-    "@tresjs/cientos": "^5.0.1",
-    "@tresjs/core": "^5.0.3",
-    "gsap": "^3.13.0",
+    "@tresjs/cientos": "^5.2.0",
+    "@tresjs/core": "^5.2.0",
+    "gsap": "^3.14.2",
     "markdown-it": "^14.1.0",
-    "three": "^0.180.0",
-    "vue": "^3.5.22"
+    "three": "^0.182.0",
+    "vue": "^3.5.26"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.1",
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.14",
-    "vite": "^7.1.7",
-    "vite-plugin-vue-devtools": "^8.0.2"
+    "@vitejs/plugin-vue": "^6.0.3",
+    "vite": "^7.3.0",
+    "vite-plugin-vue-devtools": "^8.0.5"
   },
   "packageManager": "yarn@4.12.0"
 }

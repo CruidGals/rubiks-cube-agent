@@ -69,16 +69,6 @@ export function useRubiksCube() {
         }
     }
 
-    // Define material
-    const mats = [
-    new MeshBasicMaterial({ color: 0xff0000 }), // +X
-    new MeshBasicMaterial({ color: 0xffa500 }), // -X
-    new MeshBasicMaterial({ color: 0xffffff }), // +Y
-    new MeshBasicMaterial({ color: 0xffff00 }), // -Y
-    new MeshBasicMaterial({ color: 0x008000 }), // +Z
-    new MeshBasicMaterial({ color: 0x0000ff })  // -Z
-    ];
-
     function setCubeObject(id: number, obj) {
         meshes.value[id].cube.object = obj;
 
