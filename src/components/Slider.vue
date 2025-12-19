@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { turnSpeed } from '../composables/cubeLogic';
+const model = defineModel<number>({ required: true });
+
+defineProps<{
+  minVal?: number;     // Optional number
+  maxVal?: number;     // Optional number
+}>();
 
 </script>
 
@@ -7,9 +12,9 @@ import { turnSpeed } from '../composables/cubeLogic';
     <div>
         <input 
             type="range" 
-            min="0" 
-            max="10" 
-            v-model="turnSpeed"
+            :min="minVal ?? 0" 
+            :max="maxVal ?? 10"
+            v-model.number="model"
             @mousedown="(e) => (e.currentTarget as HTMLInputElement).blur()"
         />
     </div>

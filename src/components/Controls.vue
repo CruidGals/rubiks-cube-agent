@@ -1,20 +1,14 @@
 <script setup lang="ts">
 import Slider from './Slider.vue';
-import { turnSpeed } from '@/composables/cubeLogic';
+import { useCubeLogic, turnSpeed, moveCount, currMove, isRotating, updatedCubeMoves } from '@/composables/cubeLogic';
 import { showFaceSymbols, resetCube } from '@/composables/cubeVisual';
-import { useCubeLogic, isRotating } from '@/composables/cubeLogic';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faChevronLeft, faChevronRight, faPlay } from '@fortawesome/free-solid-svg-icons';
 import MarkdownIt from 'markdown-it';
 import Modal from './Modal.vue';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
-// const { scene } = useTres();
 const showModal = ref(false);
-
-// For playing moves
-const { playMoves } = useCubeLogic();
-const moveSet = ref('');
 
 // Hiding overlay
 const overlayFolded = ref(false);
@@ -24,13 +18,34 @@ const md = new MarkdownIt();
 import keybindMd from '../assets/keybinds.md?raw';
 const modalContent = md.render(keybindMd);
 
+// For playing moves
+const { readMoves, playMoves } = useCubeLogic();
+const moveSet = ref('');
+
+// Use debouncing to update the moves based on what the user typed in
+let inputTimer;
+const finishTypingInterval = 3000; // 3 seconds
+
+watch(moveSet, (newMoveSet) => {
+    updatedCubeMoves.value = false;
+    clearTimeout(inputTimer);
+    inputTimer = setTimeout(() => readMoves(newMoveSet), finishTypingInterval);
+})
+
+// Handling playing moves
+function play() {
+    // Clear timeout for reading moves
+    clearTimeout(inputTimer);
+    playMoves(moveSet.value);
+}
+
 </script>
 
 <template>
     <div ref="controlsRef" class="controls">
         <div ref="overlayRef" class="overlay" v-if="!overlayFolded">
             <h2>Turn Speed {{ turnSpeed / 10 }}s</h2>
-            <Slider />
+            <Slider v-model="turnSpeed"/>
 
             <div class="spacer"></div>
 
@@ -53,9 +68,10 @@ const modalContent = md.render(keybindMd);
 
             <!-- Move the cube by giving it a set of moves -->
             <textarea v-model="moveSet" placeholder="R U R' U' ..." style="max-width: 160px; min-width: 160px;"/>
+            <Slider :max-val="moveCount" v-model="currMove"/>
             <div class="play-button-row">
                 <div class="button play-button"><FontAwesomeIcon :icon="faChevronLeft" /></div>
-                <div class="button play-button"><FontAwesomeIcon :icon="faPlay" /></div>
+                <div class="button play-button" @click="play()" ><FontAwesomeIcon :icon="faPlay" /></div>
                 <div class="button play-button"><FontAwesomeIcon :icon="faChevronRight" /></div>
             </div>
         </div>

@@ -7,6 +7,23 @@ import { isLowerCase } from "./util";
 // Master group which contains all cubes
 const masterGroup = shallowRef<THREE.Group | null>(null);
 
+// Helper to detect rotation
+export const isRotating = ref<boolean>(false);
+
+// Store the list of moves
+export const updatedCubeMoves = ref(false);
+const cubeMoves = ref<CubeMove[]>([]);
+
+// Detector if current playing an entered set of moves
+const playingMoves = ref<boolean>(false);
+
+// For dynamic movement
+export const moveCount = ref<number>(0);
+export const currMove = ref<number>(0);
+
+// Variable to determine turn speed
+export const turnSpeed = ref<number>(0.0);
+
 // Use an enum to denote the different faces of a Rubik's Cube
 export enum CubeNotation {
     R, L, U, D, F, B, M, S, E, // Regular moves
@@ -66,11 +83,11 @@ function letterToCubeNotation(letter: string, wide_move: boolean = false) {
 }
 
 // Read a set of moves (in a string), and return a queue
-function readMoves(moves: string) {
+function readMoves(moves_str: string) {
     // Strategy: skip all whitespace
     // character must be a move or number 2
-    let lines: string[] = moves.split(/\r?\n|\r|\n/g);
-    let cubeMoves: CubeMove[] = [];
+    let lines: string[] = moves_str.split(/\r?\n|\r|\n/g);
+    let moves: CubeMove[] = [];
 
     for (const line of lines) {
         for (let i = 0; i < line.length; i++ ) {
@@ -98,21 +115,13 @@ function readMoves(moves: string) {
             }
 
             // Add it to list
-            cubeMoves.push(cubeMove);
+            moves.push(cubeMove);
         }
     }
 
-    return cubeMoves;
+    updatedCubeMoves.value = true;
+    cubeMoves.value = moves;
 }
-
-// Helper to detect rotation
-export const isRotating = ref<boolean>(false);
-
-// Detector if current playing an entered set of moves
-const playingMoves = ref<boolean>(false);
-
-// Variable to determine turn speed
-export const turnSpeed = ref<number>(0.0);
 
 export function useCubeLogic() {
     function grabCubesFromFace(face: CubeNotation) {
@@ -257,13 +266,55 @@ export function useCubeLogic() {
         isRotating.value = false;
     }
 
+    // Read a set of moves (in a string), and return a queue
+    async function readMoves(moves_str: string) {
+        // Strategy: skip all whitespace
+        // character must be a move or number 2
+        let lines: string[] = moves_str.split(/\r?\n|\r|\n/g);
+        let moves: CubeMove[] = [];
+
+        for (const line of lines) {
+            for (let i = 0; i < line.length; i++ ) {
+                let move = line[i];
+
+                // If found a comment (double slash), just end the loop
+                if (move === "/" && (i < (line.length - 1) && line[i+1] === "/")) break;
+
+                // Skip spaces, newline, and tabs
+                if (" \t\n".includes(move)) continue;
+                
+                // Invalid character, skip and return nothing (not including 2 or ' because we parse that while parsing the move)
+                if (!"rludfbxyzRLUDFBMSE".includes(move)) return null;
+
+                // Parse move
+                let cubeMove: CubeMove = {face: letterToCubeNotation(move, isLowerCase(move)), prime: false, double: false};
+
+                // Check if there's a prime or 2 after
+                if (i < (line.length - 1)) {
+                    if (line[i+1] === "'") { cubeMove.prime = true;  i++; }
+                    if (line[i+1] === "2") { 
+                        cubeMove.double = true; i++; 
+                        if (line[i+1] === "'") { cubeMove.prime = true; i++; }
+                    }
+                }
+
+                // Add it to list
+                moves.push(cubeMove);
+            }
+        }
+
+        updatedCubeMoves.value = true;
+        cubeMoves.value = moves;
+        console.log("Successfully read moves!")
+    }
+
     // Plays a set of moves given
     async function playMoves(moves: string) {
         // If already playing a set of moves, don't do it
         if (playingMoves.value) return;
 
-        // Grab the moves
-        let cubeMoves = readMoves(moves);
+        // If haven't updated already (within the timeout), update it to play
+        if (!updatedCubeMoves.value) await readMoves(moves);
 
         // If invalid, don't continue
         if (cubeMoves == null) {
@@ -273,11 +324,11 @@ export function useCubeLogic() {
 
         // Begin playing the moves to the user
         playingMoves.value = true;
-        for (const cubeMove of cubeMoves) {
+        for (const cubeMove of cubeMoves.value) {
             await rotateFace(cubeMove, turnSpeed.value / 10);
         }
         playingMoves.value = false;
     }
 
-    return { masterGroup, rotateFace, handleRotation, playMoves, turnSpeed, isRotating };
+    return { masterGroup, rotateFace, handleRotation, readMoves, playMoves, isRotating };
 }
