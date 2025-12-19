@@ -284,7 +284,7 @@ export function useCubeLogic() {
                 if (" \t\n".includes(move)) continue;
                 
                 // Invalid character, skip and return nothing (not including 2 or ' because we parse that while parsing the move)
-                if (!"rludfbxyzRLUDFBMSE".includes(move)) return null;
+                if (!"rludfbxyzRLUDFBMSE".includes(move)) return -1;
 
                 // Parse move
                 let cubeMove: CubeMove = {face: letterToCubeNotation(move, isLowerCase(move)), prime: false, double: false};
@@ -305,7 +305,9 @@ export function useCubeLogic() {
 
         updatedCubeMoves.value = true;
         cubeMoves.value = moves;
-        console.log("Successfully read moves!")
+
+        // Signify success
+        return 0;
     }
 
     // Plays a set of moves given

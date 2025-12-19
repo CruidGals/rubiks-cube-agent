@@ -21,15 +21,24 @@ const modalContent = md.render(keybindMd);
 // For playing moves
 const { readMoves, playMoves } = useCubeLogic();
 const moveSet = ref('');
+const invalidMoveSet = ref(false);
 
 // Use debouncing to update the moves based on what the user typed in
 let inputTimer;
-const finishTypingInterval = 3000; // 3 seconds
+const finishTypingInterval = 1000; // 1 second
 
 watch(moveSet, (newMoveSet) => {
+    invalidMoveSet.value = false;
     updatedCubeMoves.value = false;
     clearTimeout(inputTimer);
-    inputTimer = setTimeout(() => readMoves(newMoveSet), finishTypingInterval);
+
+    inputTimer = setTimeout(async () => {
+        let res = await readMoves(newMoveSet);
+
+        // Lets user know if its invalid by coloring the field red
+        if (res == -1) invalidMoveSet.value = true;
+
+    }, finishTypingInterval);
 })
 
 // Handling playing moves
@@ -67,7 +76,7 @@ function play() {
             <div class="spacer"></div>
 
             <!-- Move the cube by giving it a set of moves -->
-            <textarea v-model="moveSet" placeholder="R U R' U' ..." style="max-width: 160px; min-width: 160px;"/>
+            <textarea :class="invalidMoveSet ? 'input-error' : '' " v-model="moveSet" placeholder="R U R' U' ..." style="max-width: 160px; min-width: 160px;"/>
             <Slider :max-val="moveCount" v-model="currMove"/>
             <div class="play-button-row">
                 <div class="button play-button"><FontAwesomeIcon :icon="faChevronLeft" /></div>
@@ -149,6 +158,17 @@ function play() {
         height: 20px;
         padding: 0;
         margin: 0;
+    }
+
+    .input-error {
+        border-color: #ef4444 !important; 
+        background-color: #fef2f2;
+        color: #b91c1c;
+    }
+
+    .input-error:focus {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
     }
 
     /* Play button specifics */
