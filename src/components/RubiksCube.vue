@@ -10,7 +10,7 @@ import { useFocus } from '@vueuse/core';
 
 const { hovering, onCubePointerDown } = useCameraControls();
 const { meshes, setCubeObject } = useRubiksCube();
-const { masterGroup, handleRotation } = useCubeLogic();
+const { masterGroup, prepareMove, playMove } = useCubeLogic();
 
 // Font
 import robotoJson from '@/assets/fonts/Roboto_Regular.json';
@@ -28,7 +28,14 @@ window.addEventListener('keydown', async (event) => {
         return;
     }
 
-    if (focused) await handleRotation(event);
+    if (focused) {
+        let move = prepareMove(event);
+
+        // Don't proceed if invalid move
+        if (move == null) return;
+
+        await playMove(move);
+    }
 });
 
 </script>
