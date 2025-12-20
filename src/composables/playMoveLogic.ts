@@ -1,4 +1,4 @@
-import { CubeMove, isRotating, turnSpeed, useCubeLogic } from "./cubeLogic";
+import { CubeMove, isRotating, turnSpeed, useCubeLogic, activeTween } from "./cubeLogic";
 import { ref } from "vue";
 import { isLowerCase } from "./util";
 
@@ -114,5 +114,14 @@ export function usePlayMoveLogic() {
         currPlaying.value = false;
     }
 
-    return { prepareMove, readMoves, playMove, playMoves }
+    function forceMoveCompletion() {
+        // If currently playing or rotating, just stop it immediately
+        isRotating.value = false;
+        currPlaying.value = false;
+
+        // Set the progress of the animation to complete
+        if (activeTween.value) activeTween.value.progress(1);
+    }
+
+    return { prepareMove, readMoves, playMove, playMoves, forceMoveCompletion }
 }

@@ -8,6 +8,7 @@ const masterGroup = shallowRef<THREE.Group | null>(null);
 
 // Helper to detect rotation
 export const isRotating = ref<boolean>(false);
+export const activeTween = ref<gsap.core.Tween | null>(null);
 
 // Variable to determine turn speed
 export const turnSpeed = ref<number>(0.0);
@@ -29,8 +30,12 @@ export type CubeMove = {
 // Helper function to animate rotation
 function animateRotateOnAxis(target, vars) {
     return new Promise(resolve => {
-        vars.onComplete = resolve; 
-        gsap.to(target, vars);
+        vars.onComplete = () => {
+            activeTween.value = null;
+            resolve;
+        }; 
+        
+        activeTween.value = gsap.to(target, vars);
     })
 }
 

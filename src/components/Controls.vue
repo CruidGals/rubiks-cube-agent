@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import Slider from './Slider.vue';
 import { turnSpeed, isRotating } from '@/composables/cubeLogic';
-import { updatedCubeMoves, moveCount, currMove, usePlayMoveLogic } from '@/composables/playMoveLogic';
+import { updatedCubeMoves, moveCount, currMove, usePlayMoveLogic, currPlaying } from '@/composables/playMoveLogic';
 import { showFaceSymbols, resetCube } from '@/composables/cubeVisual';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faChevronLeft, faChevronRight, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faChevronRight, faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
 import MarkdownIt from 'markdown-it';
 import Modal from './Modal.vue';
 import { ref, watch } from 'vue';
@@ -20,7 +20,7 @@ import keybindMd from '../assets/keybinds.md?raw';
 const modalContent = md.render(keybindMd);
 
 // For playing moves
-const { readMoves, playMoves } = usePlayMoveLogic();
+const { readMoves, playMoves, forceMoveCompletion } = usePlayMoveLogic();
 const moveSet = ref('');
 const invalidMoveSet = ref(false);
 
@@ -81,7 +81,7 @@ function play() {
             <Slider :max-val="moveCount" v-model="currMove"/>
             <div class="play-button-row">
                 <div class="button play-button"><FontAwesomeIcon :icon="faChevronLeft" /></div>
-                <div class="button play-button" @click="play()" ><FontAwesomeIcon :icon="faPlay" /></div>
+                <div class="button play-button" @click="!currPlaying ? play() : forceMoveCompletion()" ><FontAwesomeIcon :icon="!currPlaying ? faPlay : faPause" /></div>
                 <div class="button play-button"><FontAwesomeIcon :icon="faChevronRight" /></div>
             </div>
         </div>
