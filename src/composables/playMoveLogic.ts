@@ -54,6 +54,9 @@ export function usePlayMoveLogic() {
         caller == CallerType.player ? isRotating.value = true : isPlaying.value = true;
         await rotateFace(move, turnSpeed.value / 10);
         caller == CallerType.player ? isRotating.value = false : isPlaying.value = false;
+
+        // Side effect of user move play, just reset the playingMoves variable
+        if (caller == CallerType.player) currMove.value = 0;
     }
 
     // Read a set of moves (in a string), and return a queue
