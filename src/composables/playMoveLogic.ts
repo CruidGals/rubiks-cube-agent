@@ -7,7 +7,7 @@ export enum CallerType {
     computer
 }
 
-const { rotateFace, letterToCubeNotation } = useCubeLogic();
+const { getComplimentMove, rotateFace, letterToCubeNotation } = useCubeLogic();
 
 // There should be separate variables for player movement and computer playiong movement
 export const isPlaying = ref(false);
@@ -20,6 +20,18 @@ const cubeMoves = ref<CubeMove[]>([]);
 export const currPlaying = ref<boolean>(false);
 export const moveCount = ref<number>(0);
 export const currMove = ref<number>(0);
+
+function forceMoveCompletion() {
+    // Don't interrupt player movement
+    if (isRotating.value) return;
+
+    // If currently playing or rotating, just stop it immediately
+    isPlaying.value = false
+    currPlaying.value = false;
+
+    // Set the progress of the animation to complete
+    if (activeTween.value) activeTween.value.progress(1);
+}
 
 export function usePlayMoveLogic() {
 
@@ -122,17 +134,34 @@ export function usePlayMoveLogic() {
         currPlaying.value = false;
     }
 
-    function forceMoveCompletion() {
-        // Don't interrupt player movement
+    // For stepping functions
+    async function stepMove(backward: boolean = false) {
+        // Don't interrupt current rotations by the user
         if (isRotating.value) return;
 
-        // If currently playing or rotating, just stop it immediately
-        isPlaying.value = false
-        currPlaying.value = false;
+        // DO interrupt current rotation by computer by stopping it imnmediately
+        if (isPlaying.value) {
+            forceMoveCompletion();
+            return;
+        }
 
-        // Set the progress of the animation to complete
-        if (activeTween.value) activeTween.value.progress(1);
+        // If stepping to the left
+        if (backward) {
+            // No more moves to the left, don't continue
+            if (currMove.value <= 0) return;
+            currMove.value--;
+
+            // Rotate backwards
+            await playMove(getComplimentMove(cubeMoves.value[currMove.value]), CallerType.computer);
+        } else {
+            // No more moves to the right, don't continue
+            if (currMove.value >= moveCount.value) return;
+            
+            // Rotate forwards
+            await playMove(cubeMoves.value[currMove.value], CallerType.computer);
+            currMove.value++;
+        }
     }
-
-    return { prepareMove, readMoves, playMove, playMoves, forceMoveCompletion }
+ 
+    return { prepareMove, readMoves, playMove, playMoves, stepMove }
 }

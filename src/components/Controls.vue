@@ -20,7 +20,7 @@ import keybindMd from '../assets/keybinds.md?raw';
 const modalContent = md.render(keybindMd);
 
 // For playing moves
-const { readMoves, playMoves, forceMoveCompletion } = usePlayMoveLogic();
+const { readMoves, playMoves, stepMove } = usePlayMoveLogic();
 const moveSet = ref('');
 const invalidMoveSet = ref(false);
 
@@ -80,9 +80,9 @@ function play() {
             <textarea :class="invalidMoveSet ? 'input-error' : '' " v-model="moveSet" placeholder="R U R' U' ..." style="max-width: 160px; min-width: 160px;"/>
             <Slider :max-val="moveCount" v-model="currMove"/>
             <div class="play-button-row">
-                <div class="button play-button"><FontAwesomeIcon :icon="faChevronLeft" /></div>
-                <div class="button play-button" @click="!currPlaying ? play() : forceMoveCompletion()" ><FontAwesomeIcon :icon="!currPlaying ? faPlay : faPause" /></div>
-                <div class="button play-button"><FontAwesomeIcon :icon="faChevronRight" /></div>
+                <div class="button play-button" @click="stepMove(true)"><FontAwesomeIcon :icon="faChevronLeft" /></div>
+                <div class="button play-button" @click="!currPlaying ? play() : currPlaying = false" ><FontAwesomeIcon :icon="!currPlaying ? faPlay : faPause" /></div>
+                <div class="button play-button" @click="stepMove()"><FontAwesomeIcon :icon="faChevronRight" /></div>
             </div>
         </div>
 

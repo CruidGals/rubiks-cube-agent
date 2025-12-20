@@ -78,10 +78,10 @@ function grabCubesFromFace(face: CubeNotation) {
     }
 }
 
-// Gets the compliment of the given move. Ex. R -> R'
-function getComplimentMove(move: CubeMove) { return { face: move.face, prime: !move.prime, double: move.double } }
-
 export function useCubeLogic() {
+
+    // Gets the compliment of the given move. Ex. R -> R'
+    function getComplimentMove(move: CubeMove) { return { face: move.face, prime: !move.prime, double: move.double } }
 
     // Helper function to get correct cubeNotation
     function letterToCubeNotation(letter: string, wide_move: boolean = false) {
@@ -209,5 +209,5 @@ export function useCubeLogic() {
         pivot.clear();
     }
 
-    return { masterGroup, rotateFace, letterToCubeNotation };
+    return { masterGroup, getComplimentMove, rotateFace, letterToCubeNotation };
 }
