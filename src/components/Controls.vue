@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Slider from './Slider.vue';
-import { useCubeLogic, turnSpeed, isRotating } from '@/composables/cubeLogic';
-import { updatedCubeMoves, moveCount, currMove, readMoves } from '@/composables/playMoveLogic';
+import { turnSpeed, isRotating } from '@/composables/cubeLogic';
+import { updatedCubeMoves, moveCount, currMove, usePlayMoveLogic } from '@/composables/playMoveLogic';
 import { showFaceSymbols, resetCube } from '@/composables/cubeVisual';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faChevronLeft, faChevronRight, faPlay } from '@fortawesome/free-solid-svg-icons';
@@ -20,7 +20,7 @@ import keybindMd from '../assets/keybinds.md?raw';
 const modalContent = md.render(keybindMd);
 
 // For playing moves
-const { playMoves } = useCubeLogic();
+const { readMoves, playMoves } = usePlayMoveLogic();
 const moveSet = ref('');
 const invalidMoveSet = ref(false);
 

@@ -4,13 +4,15 @@ import { ref } from 'vue';
 import { useCameraControls } from '../composables/cameraControls';
 import { faceSymbols, showFaceSymbols, useRubiksCube } from '../composables/cubeVisual';
 import { useCubeLogic } from '../composables/cubeLogic';
+import { usePlayMoveLogic } from '@/composables/playMoveLogic';
 import { Text3D } from '@tresjs/cientos';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { useFocus } from '@vueuse/core';
 
 const { hovering, onCubePointerDown } = useCameraControls();
 const { meshes, setCubeObject } = useRubiksCube();
-const { masterGroup, prepareMove, playMove } = useCubeLogic();
+const { masterGroup } = useCubeLogic();
+const { prepareMove, playMove } = usePlayMoveLogic();
 
 // Font
 import robotoJson from '@/assets/fonts/Roboto_Regular.json';
