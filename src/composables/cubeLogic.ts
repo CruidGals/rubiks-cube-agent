@@ -73,6 +73,9 @@ function grabCubesFromFace(face: CubeNotation) {
     }
 }
 
+// Gets the compliment of the given move. Ex. R -> R'
+function getComplimentMove(move: CubeMove) { return { face: move.face, prime: !move.prime, double: move.double } }
+
 export function useCubeLogic() {
 
     // Helper function to get correct cubeNotation

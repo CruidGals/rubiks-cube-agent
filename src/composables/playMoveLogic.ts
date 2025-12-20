@@ -6,9 +6,10 @@ const { rotateFace, letterToCubeNotation } = useCubeLogic();
 
 // Store the list of moves
 export const updatedCubeMoves = ref(false);
-export const cubeMoves = ref<CubeMove[]>([]);
+const cubeMoves = ref<CubeMove[]>([]);
 
 // For dynamic movement
+export const currPlaying = ref<boolean>(false);
 export const moveCount = ref<number>(0);
 export const currMove = ref<number>(0);
 
@@ -42,6 +43,10 @@ export function usePlayMoveLogic() {
         let lines: string[] = moves_str.split(/\r?\n|\r|\n/g);
         let moves: CubeMove[] = [];
 
+        // Set dynamic values to 0
+        moveCount.value = 0;
+        currMove.value = 0;
+
         for (const line of lines) {
             for (let i = 0; i < line.length; i++ ) {
                 let move = line[i];
@@ -73,6 +78,7 @@ export function usePlayMoveLogic() {
         }
 
         updatedCubeMoves.value = true;
+        moveCount.value = moves.length;
         cubeMoves.value = moves;
 
         // Signify success
@@ -92,12 +98,20 @@ export function usePlayMoveLogic() {
             return;
         }
 
+        // If already reached the last move, go back to the front
+        if (currMove.value == moveCount.value) currMove.value = 0;
+
         // Begin playing the moves to the user
+        currPlaying.value = true;
         isRotating.value = true;
-        for (const cubeMove of cubeMoves.value) {
-            await rotateFace(cubeMove, turnSpeed.value / 10);
+
+        while (currPlaying.value && currMove.value < moveCount.value) {
+            await rotateFace(cubeMoves.value[currMove.value], turnSpeed.value / 10);
+            currMove.value++;
         }
+
         isRotating.value = false;
+        currPlaying.value = false;
     }
 
     return { prepareMove, readMoves, playMove, playMoves }
