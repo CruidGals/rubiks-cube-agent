@@ -32,7 +32,7 @@ function animateRotateOnAxis(target, vars) {
     return new Promise(resolve => {
         vars.onComplete = () => {
             activeTween.value = null;
-            resolve;
+            resolve();
         }; 
         
         activeTween.value = gsap.to(target, vars);

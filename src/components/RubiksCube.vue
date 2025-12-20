@@ -3,8 +3,8 @@ import { markRaw } from 'vue';
 import { ref } from 'vue';
 import { useCameraControls } from '../composables/cameraControls';
 import { faceSymbols, showFaceSymbols, useRubiksCube } from '../composables/cubeVisual';
-import { useCubeLogic } from '../composables/cubeLogic';
-import { usePlayMoveLogic } from '@/composables/playMoveLogic';
+import { isRotating, useCubeLogic } from '../composables/cubeLogic';
+import { usePlayMoveLogic, CallerType } from '@/composables/playMoveLogic';
 import { Text3D } from '@tresjs/cientos';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { useFocus } from '@vueuse/core';
@@ -36,7 +36,7 @@ window.addEventListener('keydown', async (event) => {
         // Don't proceed if invalid move
         if (move == null) return;
 
-        await playMove(move);
+        await playMove(move, CallerType.player);
     }
 });
 

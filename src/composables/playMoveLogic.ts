@@ -2,7 +2,15 @@ import { CubeMove, isRotating, turnSpeed, useCubeLogic, activeTween } from "./cu
 import { ref } from "vue";
 import { isLowerCase } from "./util";
 
+export enum CallerType {
+    player,
+    computer
+}
+
 const { rotateFace, letterToCubeNotation } = useCubeLogic();
+
+// There should be separate variables for player movement and computer playiong movement
+export const isPlaying = ref(false);
 
 // Store the list of moves
 export const updatedCubeMoves = ref(false);
@@ -26,14 +34,14 @@ export function usePlayMoveLogic() {
     }
 
     // Plays a set of moves given
-    async function playMove(move: CubeMove) {
+    async function playMove(move: CubeMove, caller: CallerType) {
         // If already playing a set of moves, don't do it
-        if (isRotating.value) return;
+        if (isRotating.value || isPlaying.value) return;
 
         // Begin playing the moves to the user
-        isRotating.value = true;
+        caller == CallerType.player ? isRotating.value = true : isPlaying.value = true;
         await rotateFace(move, turnSpeed.value / 10);
-        isRotating.value = false;
+        caller == CallerType.player ? isRotating.value = false : isPlaying.value = false;
     }
 
     // Read a set of moves (in a string), and return a queue
@@ -87,7 +95,7 @@ export function usePlayMoveLogic() {
 
     async function playMoves(moves: string) {
         // If already playing a set of moves, don't do it
-        if (isRotating.value) return;
+        if (isRotating.value || isPlaying.value) return;
 
         // If haven't updated already (within the timeout), update it to play
         if (!updatedCubeMoves.value) await readMoves(moves);
@@ -103,20 +111,23 @@ export function usePlayMoveLogic() {
 
         // Begin playing the moves to the user
         currPlaying.value = true;
-        isRotating.value = true;
+        isPlaying.value = true;
 
         while (currPlaying.value && currMove.value < moveCount.value) {
             await rotateFace(cubeMoves.value[currMove.value], turnSpeed.value / 10);
             currMove.value++;
         }
 
-        isRotating.value = false;
+        isPlaying.value = false;
         currPlaying.value = false;
     }
 
     function forceMoveCompletion() {
+        // Don't interrupt player movement
+        if (isRotating.value) return;
+
         // If currently playing or rotating, just stop it immediately
-        isRotating.value = false;
+        isPlaying.value = false
         currPlaying.value = false;
 
         // Set the progress of the animation to complete
