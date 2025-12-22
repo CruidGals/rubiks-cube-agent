@@ -107,6 +107,76 @@ function orientCorners(state: CubeState, move: CubeMove) {
     state.co = orient(state.co, mapping, 3);
 }
 
+function permuteEdges(state: CubeState, move: CubeMove) {
+    let mapping = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+    switch(move.face) {
+        case CubeNotation.R: case CubeNotation.r:
+            if (move.double) mapping = [4, 1, 2, 3, 0, 5, 6, 7, 11, 9, 10, 8];
+            else if (move.prime) mapping = [11, 1, 2, 3, 8, 5, 6, 7, 4, 9, 10, 0];
+            else mapping = [8, 1, 2, 3, 11, 5, 6, 7, 4, 9, 10, 0];
+            break;
+        case CubeNotation.L: case CubeNotation.l:
+            if (move.double) mapping = [0, 1, 6, 3, 4, 5, 2, 7, 8, 10, 9, 11];
+            else if (move.prime) mapping = [0, 9, 2, 3, 4, 5, 10, 7, 8, 6, 1, 11];
+            else mapping = [0, 1, 10, 3, 4, 5, 9, 7, 8, 2, 6, 11];
+            break;
+        case CubeNotation.U: case CubeNotation.u:
+            if (move.double) mapping = [2, 3, 0, 1, 4, 5, 6, 7, 8, 9, 10, 11];
+            else if (move.prime) mapping = [1, 2, 3, 0, 4, 5, 6, 7, 8, 9, 10, 11];
+            else mapping = [3, 0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11];
+            break;
+        case CubeNotation.D: case CubeNotation.d:
+            if (move.double) mapping = [0, 1, 2, 3, 6, 7, 4, 5, 8, 9, 10, 11];
+            else if (move.prime) mapping = [0, 1, 2, 3, 7, 4, 5, 6, 8, 9, 10, 11];
+            else mapping = [0, 1, 2, 3, 5, 6, 7, 4, 8, 9, 10, 11];
+            break;
+        case CubeNotation.F: case CubeNotation.f:
+            if (move.double) mapping = [0, 5, 2, 3, 4, 1, 6, 7, 9, 8, 10, 11];
+            else if (move.prime) mapping = [0, 8, 2, 3, 4, 9, 6, 7, 5, 1, 10, 11];
+            else mapping = [0, 9, 2, 3, 4, 8, 6, 7, 1, 5, 10, 11];
+            break;
+        case CubeNotation.B: case CubeNotation.b:
+            if (move.double) mapping = [0, 1, 2, 7, 4, 5, 6, 3, 8, 9, 11, 10];
+            else if (move.prime) mapping = [0, 1, 2, 10, 4, 5, 6, 11, 8, 9, 7, 3];
+            else mapping = [0, 1, 2, 11, 4, 5, 6, 10, 8, 9, 3, 7];
+            break;
+        case CubeNotation.M:
+            if (move.double) mapping = [0, 7, 2, 5, 4, 3, 6, 1, 8, 9, 10, 11];
+            else if (move.prime) mapping = [0, 3, 2, 7, 4, 1, 6, 5, 8, 9, 10, 11];
+            else mapping = [0, 5, 2, 1, 4, 7, 6, 3, 8, 9, 10, 11];
+            break;
+        case CubeNotation.E:
+            if (move.double) mapping = [0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 8, 9];
+            else if (move.prime) mapping = [0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 8];
+            else mapping = [0, 1, 2, 3, 4, 5, 6, 7, 11, 8, 9, 10];
+            break;
+        case CubeNotation.S:
+            if (move.double) mapping = [6, 1, 4, 3, 2, 5, 0, 7, 8, 9, 10, 11];
+            else if (move.prime) mapping = [2, 1, 6, 3, 0, 5, 4, 7, 8, 9, 10, 11];
+            else mapping = [4, 1, 0, 3, 6, 5, 2, 7, 8, 9, 10, 11];
+            break;
+        case CubeNotation.x:
+            if (move.double) mapping = [4, 5, 6, 7, 0, 1, 2, 3, 10, 11, 8, 9];
+            else if (move.prime) mapping = [8, 0, 9, 2, 10, 4, 11, 6, 7, 5, 1, 3];
+            else mapping = [3, 1, 5, 7, 11, 9, 10, 8, 0, 4, 6, 2];
+            break;
+        case CubeNotation.y:
+            if (move.double) mapping = [2, 3, 0, 1, 6, 7, 4, 5, 11, 10, 9, 8];
+            else if (move.prime) mapping = [1, 2, 3, 0, 5, 6, 7, 4, 11, 8, 9, 10];
+            else mapping = [3, 0, 1, 2, 4, 5, 6, 7, 9, 10, 11, 8];
+            break;
+        case CubeNotation.z:
+            if (move.double) mapping = [6, 7, 4, 5, 2, 3, 0, 1, 9, 8, 11, 10];
+            else if (move.prime) mapping = [4, 8, 0, 11, 6, 9, 2, 10, 5, 1, 3, 7];
+            else mapping = [2, 9, 6, 10, 0, 8, 4, 11, 1, 5, 7, 3];
+            break;
+    }
+
+    state.ep = permute(state.ep, mapping);
+    state.eo = permute(state.eo, mapping);
+}
+
 function updateCubeState(move: CubeMove) {
     // For each valid move, perform a permutation mapping
     switch(move.face) {
