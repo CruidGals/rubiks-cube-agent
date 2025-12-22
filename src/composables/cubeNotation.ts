@@ -79,26 +79,29 @@ function permuteCorners(state: CubeState, move: CubeMove) {
 function orientCorners(state: CubeState, move: CubeMove) {
     let mapping = [0, 0, 0, 0, 0, 0, 0, 0];
 
+    // Double moves won't affect orientation
+    if (move.double) return;
+
     switch(move.face) {
         case CubeNotation.R: case CubeNotation.r:
-            if (move.prime) [1, 0, 0, 2, 2, 0, 0, 1];        // Prime move
-            else if (!move.double) [2, 0, 0, 1, 1, 0, 0, 2]; // Reg move
+            if (move.prime) mapping = [1, 0, 0, 2, 2, 0, 0, 1];        // Prime move
+            else mapping = [2, 0, 0, 1, 1, 0, 0, 2]; // Reg move
             break;
         case CubeNotation.L: case CubeNotation.l:
-            if (move.prime) [0, 2, 1, 0, 0, 1, 2, 0];
-            else if (!move.double) [0, 1, 2, 0, 0, 2, 1, 0];
+            if (move.prime) mapping = [0, 2, 1, 0, 0, 1, 2, 0];
+            else mapping = [0, 1, 2, 0, 0, 2, 1, 0];
             break;
         case CubeNotation.F: case CubeNotation.f:
-            if (move.prime) [2, 1, 0, 0, 1, 2, 0, 0];
-            else if (!move.double) [1, 2, 0, 0, 2, 1, 0, 0];
+            if (move.prime) mapping = [2, 1, 0, 0, 1, 2, 0, 0];
+            else mapping = [1, 2, 0, 0, 2, 1, 0, 0];
             break;
         case CubeNotation.B: case CubeNotation.b:
-            if (move.prime) [0, 0, 2, 1, 0, 0, 1, 2];
-            else if (!move.double) [0, 0, 1, 2, 0, 0, 2, 1];
+            if (move.prime) mapping = [0, 0, 2, 1, 0, 0, 1, 2];
+            else mapping = [0, 0, 1, 2, 0, 0, 2, 1];
             break;
         case CubeNotation.x: case CubeNotation.z:
-            if (move.prime) [2, 1, 2, 1, 1, 2, 1, 2];
-            else if (!move.double) [1, 2, 1, 2, 2, 1, 2, 1];
+            if (move.prime) mapping = [2, 1, 2, 1, 1, 2, 1, 2];
+            else mapping = [1, 2, 1, 2, 2, 1, 2, 1];
             break;
         default: return;
     }
@@ -180,18 +183,21 @@ function permuteEdges(state: CubeState, move: CubeMove) {
 function orientEdges(state: CubeState, move: CubeMove) {
     let mapping = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+    // Double moves won't affect orientation
+    if (move.double) return;
+
     switch(move.face) {
         case CubeNotation.F: case CubeNotation.f:
-            if (!move.double) mapping = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1];
+            mapping = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1];
             break;
         case CubeNotation.B: case CubeNotation.b:
-            if (!move.double) mapping = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1];
+            mapping = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1];
             break;
         case CubeNotation.S:
-            if (!move.double) mapping = [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0];
+            mapping = [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0];
             break;
         case CubeNotation.z:
-            if (!move.double) mapping = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+            mapping = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
             break;
         default: return;
     }
