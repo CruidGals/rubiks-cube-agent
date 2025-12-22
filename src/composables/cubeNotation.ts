@@ -177,6 +177,29 @@ function permuteEdges(state: CubeState, move: CubeMove) {
     state.eo = permute(state.eo, mapping);
 }
 
+function orientEdges(state: CubeState, move: CubeMove) {
+    let mapping = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    switch(move.face) {
+        case CubeNotation.F: case CubeNotation.f:
+            if (!move.double) mapping = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1];
+            break;
+        case CubeNotation.B: case CubeNotation.b:
+            if (!move.double) mapping = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1];
+            break;
+        case CubeNotation.S:
+            if (!move.double) mapping = [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0];
+            break;
+        case CubeNotation.z:
+            if (!move.double) mapping = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+            break;
+        default: return;
+    }
+
+    // Orient edges modulo 2
+    state.eo = orient(state.eo, mapping, 2);
+}
+
 function updateCubeState(move: CubeMove) {
     // For each valid move, perform a permutation mapping
     switch(move.face) {
