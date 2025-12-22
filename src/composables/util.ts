@@ -29,3 +29,16 @@ export function permute(arr: any[], mapping: number[]) {
     // Return the array
     return newArr;
 }
+
+// To help with orienting corners and edges. Add the mapping to arr modulo the modulus
+export function orient(arr: number[], mapping: number[], modulus: number) {
+    
+    // Ensure arr and mapping are same length
+    if (arr.length != mapping.length) {
+        console.error("Array and mapping not same length; cannot permute.");
+        return;
+    }
+
+    // Return the mapping
+    return arr.map((val, idx) => (val + mapping[idx]) % modulus)
+}
