@@ -34,11 +34,8 @@ export function usePlayMoveLogic() {
     }
 
     async function forceMoveCompletion() {
-        // Don't interrupt player movement
-        if (isRotating.value) return;
-
-        // Don't proceed if already done playing
-        if (!isPlaying.value) return;
+        // Don't interrupt player movement, but interrupt playing
+        if (isRotating.value || !isPlaying.value) return;
 
         // If currently playing or rotating, just stop it immediately
         isPlaying.value = false
@@ -46,20 +43,6 @@ export function usePlayMoveLogic() {
 
         // Set the progress of the animation to complete
         if (activeTween.value) activeTween.value.progress(1);
-    }
-
-    // Plays a set of moves given
-    async function playMove(move: CubeMove, turnSpeed: number, caller: CallerType) {
-        // If already playing a set of moves, don't do it
-        if (isRotating.value || isPlaying.value) return;
-
-        // Begin playing the moves to the user
-        caller == CallerType.player ? isRotating.value = true : isPlaying.value = true;
-        await rotateFace(move, turnSpeed / 10);
-        caller == CallerType.player ? isRotating.value = false : isPlaying.value = false;
-
-        // Side effect of user move play, just reset the playingMoves variable
-        if (caller == CallerType.player) currMove.value = 0;
     }
 
     // Read a set of moves (in a string), and return a queue
@@ -111,6 +94,20 @@ export function usePlayMoveLogic() {
         return 0;
     }
 
+    // Plays a set of moves given
+    async function playMove(move: CubeMove, turnSpeed: number, caller: CallerType) {
+        // If already playing a set of moves, don't do it
+        if (isRotating.value || isPlaying.value) return;
+
+        // Begin playing the moves to the user
+        caller == CallerType.player ? isRotating.value = true : isPlaying.value = true;
+        await rotateFace(move, turnSpeed / 10);
+        caller == CallerType.player ? isRotating.value = false : isPlaying.value = false;
+
+        // Side effect of user move play, just reset the playingMoves variable
+        if (caller == CallerType.player) currMove.value = 0;
+    }
+
     async function playMoves(moves: string, turnSpeed: number) {
         // If already playing a set of moves, don't do it
         if (isRotating.value || isPlaying.value) return;
@@ -133,7 +130,9 @@ export function usePlayMoveLogic() {
 
         while (currPlaying.value && currMove.value < moveCount.value) {
             await rotateFace(cubeMoves.value[currMove.value], turnSpeed / 10);
-            currMove.value++;
+            
+            // Try to catch race condition with forceMoveCompletion()
+            if (currPlaying.value) currMove.value++;
         }
 
         isPlaying.value = false;
