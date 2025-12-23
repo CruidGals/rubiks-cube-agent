@@ -71,10 +71,12 @@ function play() {
 }
 
 // Handling reset cube
-function onResetCube() {
-    resetCube();
+async function onResetCube() {
+    // Make sure nothing is being played during reset
+    await forceMoveCompletion();
 
-    // Move the play slider to the start
+    // Reset eveyrthing
+    resetCube();
     currMove.value = 0;
 }
 

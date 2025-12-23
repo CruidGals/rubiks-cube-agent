@@ -33,7 +33,7 @@ export function usePlayMoveLogic() {
         return {face: letterToCubeNotation(event.key, event.ctrlKey), prime: event.shiftKey, double: false};
     }
 
-    function forceMoveCompletion() {
+    async function forceMoveCompletion() {
         // Don't interrupt player movement
         if (isRotating.value) return;
 
@@ -185,7 +185,7 @@ export function usePlayMoveLogic() {
 
         // DO interrupt current rotation by computer by stopping it imnmediately
         if (isPlaying.value) {
-            forceMoveCompletion();
+            await forceMoveCompletion();
             return;
         }
 
