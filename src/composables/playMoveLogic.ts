@@ -163,13 +163,13 @@ export function usePlayMoveLogic() {
         isPlaying.value = true;
 
         if (backward) {
-            while (currPlaying.value && start >= end) {
-                await rotateFace(getComplimentMove(cubeMoves.value[currMove.value]), turnSpeed / 10);
+            while (currPlaying.value && start > end) {
                 start--;
+                await rotateFace(getComplimentMove(cubeMoves.value[start]), turnSpeed / 10);
             }
         } else {
-            while (currPlaying.value && start <= end) {
-                await rotateFace(cubeMoves.value[currMove.value], turnSpeed / 10);
+            while (currPlaying.value && start < end) {
+                await rotateFace(cubeMoves.value[start], turnSpeed / 10);
                 start++;
             }
         }

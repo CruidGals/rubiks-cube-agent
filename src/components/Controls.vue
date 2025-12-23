@@ -31,12 +31,14 @@ watch(currMove, (newMove) => {
     playSliderValue.value = newMove;
 })
 
-watch(playSliderValue, async (newVal) => {
+watch(playSliderValue, async (newVal, oldVal) => {
     // If changed to currMove, don't run
     if (newVal == currMove.value) return;
 
+    console.log(newVal, oldVal);
+
     // Play moves to that range
-    await playMoveRange(moveSet.value, 0, playSliderValue.value, newVal);
+    await playMoveRange(moveSet.value, 0, oldVal, newVal);
     currMove.value = newVal;
 })
 
