@@ -20,9 +20,28 @@ import keybindMd from '../assets/keybinds.md?raw';
 const modalContent = md.render(keybindMd);
 
 // For playing moves
-const { readMoves, playMoves, stepMove } = usePlayMoveLogic();
+const { forceMoveCompletion, readMoves, playMoves, playMoveRange, stepMove } = usePlayMoveLogic();
 const moveSet = ref('');
 const invalidMoveSet = ref(false);
+
+// For the slider functinality
+const playSliderValue = ref(currMove.value);
+
+watch(currMove, (newMove) => {
+    playSliderValue.value = newMove;
+})
+
+watch(playSliderValue, async (newVal) => {
+    // If changed to currMove, don't run
+    if (newVal == currMove.value) return;
+
+    // Play moves to that range
+    await playMoveRange(moveSet.value, 0, playSliderValue.value, newVal);
+    currMove.value = newVal;
+})
+
+// If ever interacting with the slider, finish move immediately
+const playSliderOnMouseDown = () => { forceMoveCompletion(); }
 
 // Use debouncing to update the moves based on what the user typed in
 let inputTimer;
@@ -46,7 +65,15 @@ watch(moveSet, (newMoveSet) => {
 function play() {
     // Clear timeout for reading moves
     clearTimeout(inputTimer);
-    playMoves(moveSet.value);
+    playMoves(moveSet.value, turnSpeed.value);
+}
+
+// Handling reset cube
+function onResetCube() {
+    resetCube();
+
+    // Move the play slider to the start
+    currMove.value = 0;
 }
 
 </script>
@@ -72,17 +99,17 @@ function play() {
                 </Modal>
             </teleport>
             <div class="button" @click="showModal = true">Show Keybinds</div>
-            <div class="button" @click="isRotating ? null : resetCube()">Reset Cube</div>
+            <div class="button" @click="isRotating ? null : onResetCube()">Reset Cube</div>
 
             <div class="spacer"></div>
 
             <!-- Move the cube by giving it a set of moves -->
             <textarea :class="invalidMoveSet ? 'input-error' : '' " v-model="moveSet" placeholder="R U R' U' ..." style="max-width: 160px; min-width: 160px;"/>
-            <Slider :max-val="moveCount" v-model="currMove"/>
+            <Slider :max-val="moveCount" :on-mouse-down="playSliderOnMouseDown" v-model="playSliderValue"/>
             <div class="play-button-row">
-                <div class="button play-button" @click="stepMove(true)"><FontAwesomeIcon :icon="faChevronLeft" /></div>
+                <div class="button play-button" @click="stepMove(turnSpeed, true)"><FontAwesomeIcon :icon="faChevronLeft" /></div>
                 <div class="button play-button" @click="!currPlaying ? play() : currPlaying = false" ><FontAwesomeIcon :icon="!currPlaying ? faPlay : faPause" /></div>
-                <div class="button play-button" @click="stepMove()"><FontAwesomeIcon :icon="faChevronRight" /></div>
+                <div class="button play-button" @click="stepMove(turnSpeed)"><FontAwesomeIcon :icon="faChevronRight" /></div>
             </div>
         </div>
 

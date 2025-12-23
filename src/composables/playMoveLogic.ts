@@ -1,4 +1,4 @@
-import { CubeMove, isRotating, turnSpeed, useCubeLogic, activeTween } from "./cubeLogic";
+import { CubeMove, isRotating, useCubeLogic, activeTween } from "./cubeLogic";
 import { ref } from "vue";
 import { isLowerCase } from "./util";
 
@@ -21,18 +21,6 @@ export const currPlaying = ref<boolean>(false);
 export const moveCount = ref<number>(0);
 export const currMove = ref<number>(0);
 
-function forceMoveCompletion() {
-    // Don't interrupt player movement
-    if (isRotating.value) return;
-
-    // If currently playing or rotating, just stop it immediately
-    isPlaying.value = false
-    currPlaying.value = false;
-
-    // Set the progress of the animation to complete
-    if (activeTween.value) activeTween.value.progress(1);
-}
-
 export function usePlayMoveLogic() {
 
     function prepareMove(event: KeyboardEvent) {
@@ -45,14 +33,29 @@ export function usePlayMoveLogic() {
         return {face: letterToCubeNotation(event.key, event.ctrlKey), prime: event.shiftKey, double: false};
     }
 
+    function forceMoveCompletion() {
+        // Don't interrupt player movement
+        if (isRotating.value) return;
+
+        // Don't proceed if already done playing
+        if (!isPlaying.value) return;
+
+        // If currently playing or rotating, just stop it immediately
+        isPlaying.value = false
+        currPlaying.value = false;
+
+        // Set the progress of the animation to complete
+        if (activeTween.value) activeTween.value.progress(1);
+    }
+
     // Plays a set of moves given
-    async function playMove(move: CubeMove, caller: CallerType) {
+    async function playMove(move: CubeMove, turnSpeed: number, caller: CallerType) {
         // If already playing a set of moves, don't do it
         if (isRotating.value || isPlaying.value) return;
 
         // Begin playing the moves to the user
         caller == CallerType.player ? isRotating.value = true : isPlaying.value = true;
-        await rotateFace(move, turnSpeed.value / 10);
+        await rotateFace(move, turnSpeed / 10);
         caller == CallerType.player ? isRotating.value = false : isPlaying.value = false;
 
         // Side effect of user move play, just reset the playingMoves variable
@@ -108,7 +111,7 @@ export function usePlayMoveLogic() {
         return 0;
     }
 
-    async function playMoves(moves: string) {
+    async function playMoves(moves: string, turnSpeed: number) {
         // If already playing a set of moves, don't do it
         if (isRotating.value || isPlaying.value) return;
 
@@ -129,7 +132,7 @@ export function usePlayMoveLogic() {
         isPlaying.value = true;
 
         while (currPlaying.value && currMove.value < moveCount.value) {
-            await rotateFace(cubeMoves.value[currMove.value], turnSpeed.value / 10);
+            await rotateFace(cubeMoves.value[currMove.value], turnSpeed / 10);
             currMove.value++;
         }
 
@@ -137,8 +140,46 @@ export function usePlayMoveLogic() {
         currPlaying.value = false;
     }
 
+    // For playing a specific range of moves
+    // Range is in form [start, end], inclusive ends
+    async function playMoveRange(moves: string, turnSpeed: number, start: number, end: number) {
+        // If already playing a set of moves, don't do it
+        if (isRotating.value || isPlaying.value) return;
+
+        // If haven't updated already (within the timeout), update it to play
+        if (!updatedCubeMoves.value) await readMoves(moves);
+
+        // If invalid, don't continue
+        if (cubeMoves == null) {
+            console.error("Error: invalid move combination.");
+            return;
+        }
+
+        // See if going backwards (need to compliment every move if so)
+        let backward = (end - start) < 0
+
+        // Begin playing the moves to the user
+        currPlaying.value = true;
+        isPlaying.value = true;
+
+        if (backward) {
+            while (currPlaying.value && start >= end) {
+                await rotateFace(getComplimentMove(cubeMoves.value[currMove.value]), turnSpeed / 10);
+                start--;
+            }
+        } else {
+            while (currPlaying.value && start <= end) {
+                await rotateFace(cubeMoves.value[currMove.value], turnSpeed / 10);
+                start++;
+            }
+        }
+
+        isPlaying.value = false;
+        currPlaying.value = false;
+    }
+
     // For stepping functions
-    async function stepMove(backward: boolean = false) {
+    async function stepMove(turnSpeed: number, backward: boolean = false) {
         // Don't interrupt current rotations by the user
         if (isRotating.value) return;
 
@@ -155,16 +196,16 @@ export function usePlayMoveLogic() {
             currMove.value--;
 
             // Rotate backwards
-            await playMove(getComplimentMove(cubeMoves.value[currMove.value]), CallerType.computer);
+            await playMove(getComplimentMove(cubeMoves.value[currMove.value]), turnSpeed, CallerType.computer);
         } else {
             // No more moves to the right, don't continue
             if (currMove.value >= moveCount.value) return;
             
             // Rotate forwards
-            await playMove(cubeMoves.value[currMove.value], CallerType.computer);
+            await playMove(cubeMoves.value[currMove.value], turnSpeed, CallerType.computer);
             currMove.value++;
         }
     }
  
-    return { prepareMove, readMoves, playMove, playMoves, stepMove }
+    return { prepareMove, forceMoveCompletion, readMoves, playMove, playMoves, playMoveRange, stepMove }
 }
