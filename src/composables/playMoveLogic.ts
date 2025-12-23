@@ -21,6 +21,9 @@ export const currPlaying = ref<boolean>(false);
 export const moveCount = ref<number>(0);
 export const currMove = ref<number>(0);
 
+// Force move completion to prevent race condition
+const isForcingMoveCompletion = ref(false);
+
 export function usePlayMoveLogic() {
 
     function prepareMove(event: KeyboardEvent) {
@@ -36,6 +39,9 @@ export function usePlayMoveLogic() {
     async function forceMoveCompletion() {
         // Don't interrupt player movement, but interrupt playing
         if (isRotating.value || !isPlaying.value) return;
+
+        // Set the flag to ensure smooth stoppage
+        isForcingMoveCompletion.value = true;
 
         // If currently playing or rotating, just stop it immediately
         isPlaying.value = false
@@ -132,7 +138,8 @@ export function usePlayMoveLogic() {
             await rotateFace(cubeMoves.value[currMove.value], turnSpeed / 10);
             
             // Try to catch race condition with forceMoveCompletion()
-            if (currPlaying.value) currMove.value++;
+            if (!isForcingMoveCompletion.value) currMove.value++;
+            else isForcingMoveCompletion.value = false;
         }
 
         isPlaying.value = false;
@@ -161,15 +168,20 @@ export function usePlayMoveLogic() {
         currPlaying.value = true;
         isPlaying.value = true;
 
+        // Play moves while keeping race condition in mind
         if (backward) {
             while (currPlaying.value && start > end) {
-                start--;
+                if (!isForcingMoveCompletion.value) start--;
+                else isForcingMoveCompletion.value = false;
+
                 await rotateFace(getComplimentMove(cubeMoves.value[start]), turnSpeed / 10);
             }
         } else {
             while (currPlaying.value && start < end) {
                 await rotateFace(cubeMoves.value[start], turnSpeed / 10);
-                start++;
+                
+                if (!isForcingMoveCompletion.value) start++;
+                else isForcingMoveCompletion.value = false;
             }
         }
 
