@@ -197,6 +197,7 @@ export function usePlayMoveLogic() {
         // DO interrupt current rotation by computer by stopping it imnmediately
         if (isPlaying.value) {
             await forceMoveCompletion();
+            isForcingMoveCompletion.value = false;
             return;
         }
 
@@ -204,7 +205,10 @@ export function usePlayMoveLogic() {
         if (backward) {
             // No more moves to the left, don't continue
             if (currMove.value <= 0) return;
-            currMove.value--;
+
+            // Race condition
+            if (!isForcingMoveCompletion.value) currMove.value--;
+            else isForcingMoveCompletion.value = false;
 
             // Rotate backwards
             await playMove(getComplimentMove(cubeMoves.value[currMove.value]), turnSpeed, CallerType.computer);
@@ -214,7 +218,10 @@ export function usePlayMoveLogic() {
             
             // Rotate forwards
             await playMove(cubeMoves.value[currMove.value], turnSpeed, CallerType.computer);
-            currMove.value++;
+            
+            // Race condition
+            if (!isForcingMoveCompletion.value) currMove.value++;
+            else isForcingMoveCompletion.value = false;
         }
     }
  
