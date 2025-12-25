@@ -25,9 +25,9 @@ function permuteCorners(state: CubeState, move: CubeMove) {
 
     switch(move.face) {
         case CubeNotation.R: case CubeNotation.r:
-            if (move.double) mapping = [2, 3, 0, 1, 4, 5, 6, 7];
-            else if (move.prime) mapping = [1, 2, 3, 0, 4, 5, 6, 7];
-            else mapping = [3, 0, 1, 2, 4, 5, 6, 7];
+            if (move.double) mapping = [7, 1, 2, 4, 3, 5, 6, 0];
+            else if (move.prime) mapping = [3, 1, 2, 7, 0, 5, 6, 4];
+            else mapping = [4, 1, 2, 0, 7, 5, 6, 3];
             break;
         case CubeNotation.L: case CubeNotation.l:
             if (move.double) mapping = [0, 6, 5, 3, 4, 2, 1, 7];
@@ -41,7 +41,7 @@ function permuteCorners(state: CubeState, move: CubeMove) {
             break;
         case CubeNotation.D: case CubeNotation.d:
             if (move.double) mapping = [0, 1, 2, 3, 6, 7, 4, 5];
-            else if (move.prime) mapping = [0, 1, 2, 3, 5, 6, 7, 4];
+            else if (move.prime) mapping = [0, 1, 2, 3, 7, 4, 5, 6];
             else mapping = [0, 1, 2, 3, 5, 6, 7, 4];
             break;
         case CubeNotation.F: case CubeNotation.f:
@@ -188,7 +188,7 @@ function orientEdges(state: CubeState, move: CubeMove) {
 
     switch(move.face) {
         case CubeNotation.F: case CubeNotation.f:
-            mapping = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1];
+            mapping = [0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0];
             break;
         case CubeNotation.B: case CubeNotation.b:
             mapping = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1];
@@ -206,10 +206,10 @@ function orientEdges(state: CubeState, move: CubeMove) {
     state.eo = orient(state.eo, mapping, 2);
 }
 
-function updateCubeState(move: CubeMove) {
-    // For each valid move, perform a permutation mapping
-    switch(move.face) {
-        case CubeNotation.R:
-
-    }
+export function updateCubeState(move: CubeMove) {
+    // For each valid move, perform permutation and orientation mappings
+    permuteCorners(cubeState.value, move);
+    orientCorners(cubeState.value, move);
+    permuteEdges(cubeState.value, move);
+    orientEdges(cubeState.value, move);
 }
