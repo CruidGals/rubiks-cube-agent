@@ -56,17 +56,17 @@ function permuteCorners(state: CubeState, move: CubeMove) {
             break;
         case CubeNotation.x:
             if (move.double) mapping = [7, 6, 5, 4, 3, 2, 1, 0];
-            else if (move.prime) mapping = [4, 5, 1, 0, 7, 6, 2, 3];
-            else mapping = [3, 2, 6, 7, 0, 1, 5, 4];
+            else if (move.prime) mapping = [3, 2, 6, 7, 0, 1, 5, 4];
+            else mapping = [4, 5, 1, 0, 7, 6, 2, 3];
             break;
         case CubeNotation.y:
             if (move.double) mapping = [2, 3, 0, 1, 6, 7, 4, 5];
             else if (move.prime) mapping = [1, 2, 3, 0, 5, 6, 7, 4];
-            else mapping = [3, 0, 1, 2, 4, 5, 6, 7];
+            else mapping = [3, 0, 1, 2, 7, 4, 5, 6];
             break;
         case CubeNotation.z:
             if (move.double) mapping = [5, 4, 7, 6, 1, 0, 3, 2];
-            else if (move.prime) mapping = [3, 0, 4, 7, 5, 1, 2, 6];
+            else if (move.prime) mapping = [4, 0, 3, 7, 5, 1, 2, 6];
             else mapping = [1, 5, 6, 2, 0, 4, 7, 3];
             break;
         default: return;
@@ -84,24 +84,22 @@ function orientCorners(state: CubeState, move: CubeMove) {
 
     switch(move.face) {
         case CubeNotation.R: case CubeNotation.r:
-            if (move.prime) mapping = [1, 0, 0, 2, 2, 0, 0, 1];        // Prime move
-            else mapping = [2, 0, 0, 1, 1, 0, 0, 2]; // Reg move
+            mapping = [2, 0, 0, 1, 1, 0, 0, 2]; // Reg and prime move
             break;
         case CubeNotation.L: case CubeNotation.l:
-            if (move.prime) mapping = [0, 2, 1, 0, 0, 1, 2, 0];
-            else mapping = [0, 1, 2, 0, 0, 2, 1, 0];
+            mapping = [0, 1, 2, 0, 0, 2, 1, 0];
             break;
         case CubeNotation.F: case CubeNotation.f:
-            if (move.prime) mapping = [2, 1, 0, 0, 1, 2, 0, 0];
-            else mapping = [1, 2, 0, 0, 2, 1, 0, 0];
+            mapping = [1, 2, 0, 0, 2, 1, 0, 0];
             break;
         case CubeNotation.B: case CubeNotation.b:
-            if (move.prime) mapping = [0, 0, 2, 1, 0, 0, 1, 2];
-            else mapping = [0, 0, 1, 2, 0, 0, 2, 1];
+            mapping = [0, 0, 1, 2, 0, 0, 2, 1];
             break;
-        case CubeNotation.x: case CubeNotation.z:
-            if (move.prime) mapping = [2, 1, 2, 1, 1, 2, 1, 2];
-            else mapping = [1, 2, 1, 2, 2, 1, 2, 1];
+        case CubeNotation.x:
+            mapping = [2, 1, 2, 1, 1, 2, 1, 2];
+            break;
+        case CubeNotation.z:
+            mapping = [1, 2, 1, 2, 2, 1, 2, 1];
             break;
         default: return;
     }
@@ -116,12 +114,12 @@ function permuteEdges(state: CubeState, move: CubeMove) {
     switch(move.face) {
         case CubeNotation.R: case CubeNotation.r:
             if (move.double) mapping = [4, 1, 2, 3, 0, 5, 6, 7, 11, 9, 10, 8];
-            else if (move.prime) mapping = [11, 1, 2, 3, 8, 5, 6, 7, 4, 9, 10, 0];
+            else if (move.prime) mapping = [11, 1, 2, 3, 8, 5, 6, 7, 0, 9, 10, 4];
             else mapping = [8, 1, 2, 3, 11, 5, 6, 7, 4, 9, 10, 0];
             break;
         case CubeNotation.L: case CubeNotation.l:
             if (move.double) mapping = [0, 1, 6, 3, 4, 5, 2, 7, 8, 10, 9, 11];
-            else if (move.prime) mapping = [0, 9, 2, 3, 4, 5, 10, 7, 8, 6, 1, 11];
+            else if (move.prime) mapping = [0, 1, 9, 3, 4, 5, 10, 7, 8, 6, 2, 11];
             else mapping = [0, 1, 10, 3, 4, 5, 9, 7, 8, 2, 6, 11];
             break;
         case CubeNotation.U: case CubeNotation.u:
@@ -146,31 +144,31 @@ function permuteEdges(state: CubeState, move: CubeMove) {
             break;
         case CubeNotation.M:
             if (move.double) mapping = [0, 7, 2, 5, 4, 3, 6, 1, 8, 9, 10, 11];
-            else if (move.prime) mapping = [0, 3, 2, 7, 4, 1, 6, 5, 8, 9, 10, 11];
-            else mapping = [0, 5, 2, 1, 4, 7, 6, 3, 8, 9, 10, 11];
+            else if (move.prime) mapping = [0, 5, 2, 1, 4, 7, 6, 3, 8, 9, 10, 11];
+            else mapping = [0, 3, 2, 7, 4, 1, 6, 5, 8, 9, 10, 11];
             break;
         case CubeNotation.E:
             if (move.double) mapping = [0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 8, 9];
-            else if (move.prime) mapping = [0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 8];
-            else mapping = [0, 1, 2, 3, 4, 5, 6, 7, 11, 8, 9, 10];
+            else if (move.prime) mapping = [0, 1, 2, 3, 4, 5, 6, 7, 11, 8, 9, 10];
+            else mapping = [0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 8];
             break;
         case CubeNotation.S:
             if (move.double) mapping = [6, 1, 4, 3, 2, 5, 0, 7, 8, 9, 10, 11];
-            else if (move.prime) mapping = [2, 1, 6, 3, 0, 5, 4, 7, 8, 9, 10, 11];
-            else mapping = [4, 1, 0, 3, 6, 5, 2, 7, 8, 9, 10, 11];
+            else if (move.prime) mapping = [4, 1, 0, 3, 6, 5, 2, 7, 8, 9, 10, 11];
+            else mapping = [2, 1, 6, 3, 0, 5, 4, 7, 8, 9, 10, 11];
             break;
         case CubeNotation.x:
-            if (move.double) mapping = [4, 5, 6, 7, 0, 1, 2, 3, 10, 11, 8, 9];
-            else if (move.prime) mapping = [8, 0, 9, 2, 10, 4, 11, 6, 7, 5, 1, 3];
-            else mapping = [3, 1, 5, 7, 11, 9, 10, 8, 0, 4, 6, 2];
+            if (move.double) mapping = [4, 7, 6, 5, 0, 3, 2, 1, 11, 10, 9, 8];
+            else if (move.prime) mapping = [11, 3, 10, 7, 8, 1, 9, 5, 0, 2, 6, 4];
+            else mapping = [8, 5, 9, 1, 11, 7, 10, 3, 4, 6, 2, 0];
             break;
         case CubeNotation.y:
-            if (move.double) mapping = [2, 3, 0, 1, 6, 7, 4, 5, 11, 10, 9, 8];
-            else if (move.prime) mapping = [1, 2, 3, 0, 5, 6, 7, 4, 11, 8, 9, 10];
-            else mapping = [3, 0, 1, 2, 4, 5, 6, 7, 9, 10, 11, 8];
+            if (move.double) mapping = [2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9];
+            else if (move.prime) mapping = [1, 2, 3, 0, 5, 6, 7, 4, 9, 10, 11, 8];
+            else mapping = [3, 0, 1, 2, 7, 4, 5, 6, 11, 8, 9, 10];
             break;
         case CubeNotation.z:
-            if (move.double) mapping = [6, 7, 4, 5, 2, 3, 0, 1, 9, 8, 11, 10];
+            if (move.double) mapping = [6, 5, 4, 7, 2, 1, 0, 3, 9, 8, 11, 10];
             else if (move.prime) mapping = [4, 8, 0, 11, 6, 9, 2, 10, 5, 1, 3, 7];
             else mapping = [2, 9, 6, 10, 0, 8, 4, 11, 1, 5, 7, 3];
             break;
