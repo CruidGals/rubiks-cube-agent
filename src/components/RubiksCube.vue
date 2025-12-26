@@ -66,7 +66,7 @@ window.addEventListener('keydown', async (event) => {
         <Suspense v-for="symbol in faceSymbols">
             <Text3D
                 :text="symbol.symbol"
-                :font="font"
+                :font="font as any"
                 :height="0.02"
                 :position="symbol.position"
                 :rotation="symbol.rotation"

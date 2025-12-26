@@ -29,7 +29,7 @@ export type CubeMove = {
 
 // Helper function to animate rotation
 function animateRotateOnAxis(target, vars) {
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
         vars.onComplete = () => {
             activeTween.value = null;
             resolve();
