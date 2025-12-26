@@ -13,8 +13,14 @@ export function permute(arr: any[], mapping: number[]) {
     }
 
     // Validate mapping array
-    if (hasDuplicates(mapping) || isWithinRange(mapping, 0, arr.length - 1) ) {
-        console.error("Mapping has duplicates are not within range of arr.length.");
+    if (hasDuplicates(mapping)) {
+        console.error("Mapping has duplicates.");
+        return; 
+    }
+
+    // Validate mapping is within range of arr.length
+    if (!isWithinRange(mapping, 0, arr.length - 1)) {
+        console.error("Mapping is not within range of arr.length.");
         return;
     }
 

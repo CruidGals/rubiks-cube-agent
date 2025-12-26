@@ -4,6 +4,7 @@ import { ref } from 'vue';
 import { useCameraControls } from '../composables/cameraControls';
 import { faceSymbols, showFaceSymbols, useRubiksCube } from '../composables/cubeVisual';
 import { isRotating, turnSpeed, useCubeLogic } from '../composables/cubeLogic';
+import { cubeState, updateCubeState } from '@/composables/cubeNotation';
 import { usePlayMoveLogic, CallerType } from '@/composables/playMoveLogic';
 import { Text3D } from '@tresjs/cientos';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
@@ -35,8 +36,9 @@ window.addEventListener('keydown', async (event) => {
 
         // Don't proceed if invalid move
         if (move == null) return;
-
+        
         await playMove(move, turnSpeed.value, CallerType.player);
+        updateCubeState(move);
     }
 });
 
