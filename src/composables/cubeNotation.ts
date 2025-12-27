@@ -71,7 +71,7 @@ function permuteCorners(state: CubeState, move: CubeMove) {
             break;
         default: return;
     }
-
+    
     state.cp = permute(state.cp, mapping);
     state.co = permute(state.co, mapping);
 }
@@ -204,7 +204,8 @@ function orientEdges(state: CubeState, move: CubeMove) {
     state.eo = orient(state.eo, mapping, 2);
 }
 
-export function updateCubeState(move: CubeMove) {
+export async function updateCubeState(move: CubeMove) {
+    console.log(move.prime);
     // For each valid move, perform permutation and orientation mappings
     permuteCorners(cubeState.value, move);
     orientCorners(cubeState.value, move);

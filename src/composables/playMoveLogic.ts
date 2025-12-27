@@ -1,7 +1,6 @@
 import { CubeMove, isRotating, useCubeLogic, activeTween } from "./cubeLogic";
 import { ref } from "vue";
 import { isLowerCase } from "./util";
-import { updateCubeState } from "./cubeNotation";
 
 export enum CallerType {
     player,
@@ -113,9 +112,6 @@ export function usePlayMoveLogic() {
 
         // Side effect of user move play, just reset the playingMoves variable
         if (caller == CallerType.player) currMove.value = 0;
-
-        // Update the cube state
-        updateCubeState(move);
     }
 
     async function playMoves(moves: string, turnSpeed: number) {
@@ -141,9 +137,6 @@ export function usePlayMoveLogic() {
         while (currPlaying.value && currMove.value < moveCount.value) {
             const currentMove = cubeMoves.value[currMove.value];
             await rotateFace(currentMove, turnSpeed / 10);
-            
-            // Update the cube state with the move that was just played
-            updateCubeState(currentMove);
             
             // Try to catch race condition with forceMoveCompletion()
             if (!isForcingMoveCompletion.value) currMove.value++;
@@ -185,16 +178,11 @@ export function usePlayMoveLogic() {
                 const currentMove = getComplimentMove(cubeMoves.value[start]);
                 await rotateFace(currentMove, turnSpeed / 10);
 
-                // Update the cube state with the move that was just played
-                updateCubeState(currentMove);
             }
         } else {
             while (currPlaying.value && start < end) {
                 const currentMove = cubeMoves.value[start];
                 await rotateFace(currentMove, turnSpeed / 10);
-                
-                // Update the cube state with the move that was just played
-                updateCubeState(currentMove);
                 
                 if (!isForcingMoveCompletion.value) start++;
                 else isForcingMoveCompletion.value = false;
