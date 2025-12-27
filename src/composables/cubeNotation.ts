@@ -2,8 +2,18 @@ import { CubeMove, CubeNotation } from "./cubeLogic";
 import { ref } from "vue";
 import { orient, permute } from "./util";
 
+enum Center {
+    WHITE = 0,
+    GREEN = 1,
+    ORANGE = 2,
+    BLUE = 3,
+    RED = 4,
+    YELLOW = 5,
+}
+
 // Based on notation.md
 type CubeState = {
+    centers: number[], // 0-5, 0 is white, 1 is green, 2 is orange, 3 is blue, 4 is red, 5 is yellow
     cp: number[],
     co: number[],
     ep: number[],
@@ -12,6 +22,7 @@ type CubeState = {
 
 // Initial state of the rubiks cube
 const cubeInitialState: CubeState = {
+    centers: [Center.WHITE, Center.GREEN, Center.ORANGE, Center.BLUE, Center.RED, Center.YELLOW], // Centers convientely in order with white top green front
     cp: [0, 1, 2, 3, 4, 5, 6, 7],
     co: [0, 0, 0, 0, 0, 0, 0, 0],
     ep: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
@@ -19,6 +30,121 @@ const cubeInitialState: CubeState = {
 };
 
 export const cubeState = ref<CubeState>(cubeInitialState);
+
+// We want to get the move that would be played if white top green front
+// Create fixed arrays representing the colors in relation to white top green front
+
+const fixedFaceMap = {
+    [Center.WHITE]: CubeNotation.U,
+    [Center.GREEN]: CubeNotation.F,
+    [Center.ORANGE]: CubeNotation.L,
+    [Center.BLUE]: CubeNotation.B,
+    [Center.RED]: CubeNotation.R,
+    [Center.YELLOW]: CubeNotation.D,
+}
+
+const fixedFaceMapWide = {
+    [Center.WHITE]: CubeNotation.u,
+    [Center.GREEN]: CubeNotation.f,
+    [Center.ORANGE]: CubeNotation.l,
+    [Center.BLUE]: CubeNotation.b,
+    [Center.RED]: CubeNotation.r,
+    [Center.YELLOW]: CubeNotation.d,
+}
+
+// Based on top color and front color, determine the right neighbor color
+const rightNeighbor = {
+    [Center.WHITE]: { [Center.GREEN]: Center.RED, [Center.ORANGE]: Center.GREEN, [Center.BLUE]: Center.ORANGE, [Center.RED]: Center.BLUE },
+    [Center.GREEN]: { [Center.ORANGE]: Center.YELLOW, [Center.YELLOW]: Center.RED, [Center.RED]: Center.WHITE, [Center.WHITE]: Center.ORANGE },
+    [Center.RED]: { [Center.YELLOW]: Center.BLUE, [Center.BLUE]: Center.WHITE, [Center.WHITE]: Center.GREEN, [Center.GREEN]: Center.YELLOW },
+    [Center.BLUE]: { [Center.YELLOW]: Center.ORANGE, [Center.ORANGE]: Center.WHITE, [Center.WHITE]: Center.RED, [Center.RED]: Center.YELLOW },
+    [Center.ORANGE]: { [Center.YELLOW]: Center.GREEN, [Center.GREEN]: Center.WHITE, [Center.WHITE]: Center.BLUE, [Center.BLUE]: Center.YELLOW },
+    [Center.YELLOW]: { [Center.BLUE]: Center.RED, [Center.RED]: Center.GREEN, [Center.GREEN]: Center.ORANGE, [Center.ORANGE]: Center.BLUE }
+}
+
+// Helper function to get the opposite center 
+function getOppositeCenter(center: Center) {
+    switch(center) {
+        case Center.WHITE: return Center.YELLOW;
+        case Center.GREEN: return Center.BLUE;
+        case Center.ORANGE: return Center.RED;
+        case Center.BLUE: return Center.GREEN;
+        case Center.RED: return Center.BLUE;
+        case Center.YELLOW: return Center.WHITE;
+    }
+}
+
+// Helper to get the fixed slice face
+function getFixedSliceMove(face: CubeNotation, topColor: Center, frontColor: Center): { face: CubeNotation, prime: boolean } {
+    // Convert wide moves into slice moves if exists
+    if (face === CubeNotation.r || face === CubeNotation.l) face = CubeNotation.M;
+    else if (face === CubeNotation.u || face === CubeNotation.d) face = CubeNotation.E;
+    else if (face === CubeNotation.f || face === CubeNotation.b) face = CubeNotation.S;
+    
+    // Validate that move is a slice move
+    if (face !== CubeNotation.M && face !== CubeNotation.S && face !== CubeNotation.E) return { face: face, prime: false };
+
+    let rightColor = rightNeighbor[topColor][frontColor];
+
+    if (face === CubeNotation.M) {
+        if (rightColor === Center.RED) return { face: face, prime: false };
+        else if (rightColor === Center.ORANGE) return { face: face, prime: true };
+        else if (rightColor === Center.GREEN) return { face: CubeNotation.S, prime: false };
+        else if (rightColor === Center.BLUE) return { face: CubeNotation.S, prime: true };
+        else if (rightColor === Center.YELLOW) return { face: CubeNotation.E, prime: false };
+        else if (rightColor === Center.WHITE) return { face: CubeNotation.E, prime: true };
+    }
+
+    if (face === CubeNotation.E) {
+        if (topColor === Center.WHITE) return { face: face, prime: false };
+        else if (topColor === Center.YELLOW) return { face: face, prime: true };
+        else if (topColor === Center.GREEN) return { face: CubeNotation.S, prime: true };
+        else if (topColor === Center.BLUE) return { face: CubeNotation.S, prime: false };
+        else if (topColor === Center.ORANGE) return { face: CubeNotation.M, prime: true };
+        else if (topColor === Center.RED) return { face: CubeNotation.M, prime: false };
+    }
+
+    if (face === CubeNotation.S) {
+        if (frontColor === Center.GREEN) return { face: face, prime: false };
+        else if (frontColor === Center.BLUE) return { face: face, prime: true };
+        else if (frontColor === Center.ORANGE) return { face: CubeNotation.M, prime: false };
+        else if (frontColor === Center.RED) return { face: CubeNotation.M, prime: true };
+        else if (frontColor === Center.YELLOW) return { face: CubeNotation.E, prime: false };
+        else if (frontColor === Center.WHITE) return { face: CubeNotation.E, prime: true };
+    }
+
+    // Default return
+    return { face: face, prime: false };
+}
+
+// Find the move that would be played if white top green front
+function getFixedMove(move: CubeMove, topColor: Center, frontColor: Center) {
+    // One thing to note is that, whether or not a move is primed will always stay the same
+    // We just need to determine the correct fixed move
+
+    // Cube rotation moves cannot be fixed
+    if (move.face === CubeNotation.x || move.face === CubeNotation.y || move.face === CubeNotation.z) return move;
+
+    switch(move.face) {
+        case CubeNotation.R: return { face: fixedFaceMap[rightNeighbor[topColor][frontColor]], prime: move.prime, double: move.double }; break;
+        case CubeNotation.r: return { face: fixedFaceMapWide[rightNeighbor[topColor][frontColor]], prime: move.prime, double: move.double }; break;
+        case CubeNotation.L: return { face: fixedFaceMap[rightNeighbor[frontColor][topColor]], prime: move.prime, double: move.double }; break;
+        case CubeNotation.l: return { face: fixedFaceMapWide[rightNeighbor[frontColor][topColor]], prime: move.prime, double: move.double }; break;
+        case CubeNotation.U: return { face: fixedFaceMap[topColor], prime: move.prime, double: move.double }; break;
+        case CubeNotation.u: return { face: fixedFaceMapWide[topColor], prime: move.prime, double: move.double }; break;
+        case CubeNotation.D: return { face: fixedFaceMap[getOppositeCenter(topColor)], prime: move.prime, double: move.double }; break;
+        case CubeNotation.d: return { face: fixedFaceMapWide[getOppositeCenter(topColor)], prime: move.prime, double: move.double }; break;
+        case CubeNotation.F: return { face: fixedFaceMap[frontColor], prime: move.prime, double: move.double }; break;
+        case CubeNotation.f: return { face: fixedFaceMapWide[frontColor], prime: move.prime, double: move.double }; break;
+        case CubeNotation.B: return { face: fixedFaceMap[getOppositeCenter(frontColor)], prime: move.prime, double: move.double }; break;
+        case CubeNotation.b: return { face: fixedFaceMapWide[getOppositeCenter(frontColor)], prime: move.prime, double: move.double }; break;
+        default: break;
+    }
+
+    // At this point, we know the move is a slice move
+    const { face: sliceFace, prime: slicePrime } = getFixedSliceMove(move.face, topColor, frontColor);
+    return { face: sliceFace, prime: slicePrime ? !move.prime : move.prime, double: move.double };
+}
 
 function permuteCorners(state: CubeState, move: CubeMove) {
     let mapping = [0, 1, 2, 3, 4, 5, 6, 7]
