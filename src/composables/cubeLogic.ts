@@ -2,7 +2,6 @@ import { meshes } from "./cubeVisual";
 import * as THREE from "three";
 import gsap from "gsap";
 import { ref, shallowRef } from "vue";
-import { updateCubeState } from "./cubeNotation";
 
 // Master group which contains all cubes
 const masterGroup = shallowRef<THREE.Group | null>(null);
@@ -208,9 +207,6 @@ export function useCubeLogic() {
         // Remove pivot from scene
         pivot.removeFromParent();
         pivot.clear();
-
-        // Update the cube state
-        await updateCubeState(move);
     }
 
     return { masterGroup, getComplimentMove, rotateFace, letterToCubeNotation };
