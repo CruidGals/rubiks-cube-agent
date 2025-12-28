@@ -330,10 +330,40 @@ function orientEdges(state: CubeState, move: CubeMove) {
     state.eo = orient(state.eo, mapping, 2);
 }
 
+function updateCenters(state: CubeState, move: CubeMove) {
+    let mapping = [0, 1, 2, 3, 4, 5];
+    
+    switch(move.face) {
+        case CubeNotation.x:
+            if (move.double) mapping = [5, 3, 2, 1, 4, 0];
+            else if (move.prime) mapping = [1, 5, 2, 0, 4, 3];
+            else mapping = [3, 0, 2, 5, 4, 1];
+            break;
+        case CubeNotation.y:
+            if (move.double) mapping = [0, 3, 4, 1, 2, 5];
+            else if (move.prime) mapping = [0, 4, 1, 2, 3, 5];
+            else mapping = [0, 2, 3, 4, 1, 5];
+            break;
+        case CubeNotation.z:
+            if (move.double) mapping = [5, 1, 4, 3, 2, 0];
+            else if (move.prime) mapping = [2, 1, 5, 3, 0, 4];
+            else mapping = [4, 1, 0, 3, 5, 2];
+            break;
+        default: return;
+    }
+
+    state.centers = permute(state.centers, mapping);
+}
+
 export async function updateCubeState(move: CubeMove) {
-    // For each valid move, perform permutation and orientation mappings
-    permuteCorners(cubeState.value, move);
-    orientCorners(cubeState.value, move);
-    permuteEdges(cubeState.value, move);
-    orientEdges(cubeState.value, move);
+    // If move is a rotation move, only update the centers
+    if (move.face === CubeNotation.x || move.face === CubeNotation.y || move.face === CubeNotation.z) {
+        updateCenters(cubeState.value, move);
+    } else {
+        // For each valid move, perform permutation and orientation mappings
+        permuteCorners(cubeState.value, move);
+        orientCorners(cubeState.value, move);
+        permuteEdges(cubeState.value, move);
+        orientEdges(cubeState.value, move);
+    }
 }
