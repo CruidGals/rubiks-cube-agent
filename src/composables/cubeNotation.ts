@@ -210,17 +210,23 @@ function orientCorners(state: CubeState, move: CubeMove) {
     if (move.double) return;
 
     switch(move.face) {
-        case CubeNotation.R: case CubeNotation.r:
+        case CubeNotation.R: case CubeNotation.l:
             mapping = [2, 0, 0, 1, 1, 0, 0, 2]; // Reg and prime move
             break;
-        case CubeNotation.L: case CubeNotation.l:
+        case CubeNotation.L: case CubeNotation.r:
             mapping = [0, 1, 2, 0, 0, 2, 1, 0];
             break;
-        case CubeNotation.F: case CubeNotation.f:
+        case CubeNotation.F: case CubeNotation.b:
             mapping = [1, 2, 0, 0, 2, 1, 0, 0];
             break;
-        case CubeNotation.B: case CubeNotation.b:
+        case CubeNotation.B: case CubeNotation.f:
             mapping = [0, 0, 1, 2, 0, 0, 2, 1];
+            break;
+        case CubeNotation.M:
+            mapping = [2, 1, 2, 1, 1, 2, 1, 2];
+            break;
+        case CubeNotation.S:
+            mapping = [1, 2, 1, 2, 2, 1, 2, 1];
             break;
         default: return;
     }
@@ -299,10 +305,7 @@ function orientEdges(state: CubeState, move: CubeMove) {
             mapping = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1];
             break;
         case CubeNotation.S:
-            mapping = [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0];
-            break;
-        case CubeNotation.z:
-            mapping = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+            mapping = [0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1];
             break;
         default: return;
     }
