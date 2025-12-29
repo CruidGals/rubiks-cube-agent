@@ -318,20 +318,37 @@ function updateCenters(state: CubeState, move: CubeMove) {
     let mapping = [0, 1, 2, 3, 4, 5];
     
     switch(move.face) {
-        case CubeNotation.x:
+        // These follow the middle slice
+        case CubeNotation.x: case CubeNotation.r:
             if (move.double) mapping = [5, 3, 2, 1, 4, 0];
             else if (move.prime) mapping = [1, 5, 2, 0, 4, 3];
             else mapping = [3, 0, 2, 5, 4, 1];
             break;
-        case CubeNotation.y:
+        case CubeNotation.M: case CubeNotation.l:
+            if (move.double) mapping = [5, 3, 2, 1, 4, 0];
+            else if (move.prime) mapping = [3, 0, 2, 5, 4, 1];
+            else mapping = [1, 5, 2, 0, 4, 3];
+            break;
+        // These follow the equatorial slice
+        case CubeNotation.y: case CubeNotation.u:
             if (move.double) mapping = [0, 3, 4, 1, 2, 5];
             else if (move.prime) mapping = [0, 4, 1, 2, 3, 5];
             else mapping = [0, 2, 3, 4, 1, 5];
             break;
-        case CubeNotation.z:
+        case CubeNotation.E: case CubeNotation.d:
+            if (move.double) mapping = [0, 3, 4, 1, 2, 5];
+            else if (move.prime) mapping = [0, 2, 3, 4, 1, 5];
+            else mapping = [0, 4, 1, 2, 3, 5];
+            break;
+        case CubeNotation.z: case CubeNotation.S: case CubeNotation.f: // Note S slices follow the F move
             if (move.double) mapping = [5, 1, 4, 3, 2, 0];
             else if (move.prime) mapping = [2, 1, 5, 3, 0, 4];
             else mapping = [4, 1, 0, 3, 5, 2];
+            break;
+        case CubeNotation.b:
+            if (move.double) mapping = [5, 1, 4, 3, 2, 0];
+            else if (move.prime) mapping = [4, 1, 0, 3, 5, 2];
+            else mapping = [2, 1, 5, 3, 0, 4];
             break;
         default: return;
     }
