@@ -69,7 +69,7 @@ function getOppositeCenter(center: Center) {
         case Center.GREEN: return Center.BLUE;
         case Center.ORANGE: return Center.RED;
         case Center.BLUE: return Center.GREEN;
-        case Center.RED: return Center.BLUE;
+        case Center.RED: return Center.ORANGE;
         case Center.YELLOW: return Center.WHITE;
     }
 }
@@ -89,10 +89,10 @@ function getFixedSliceMove(face: CubeNotation, topColor: Center, frontColor: Cen
     if (face === CubeNotation.M) {
         if (rightColor === Center.RED) return { face: face, prime: false };
         else if (rightColor === Center.ORANGE) return { face: face, prime: true };
-        else if (rightColor === Center.GREEN) return { face: CubeNotation.S, prime: false };
-        else if (rightColor === Center.BLUE) return { face: CubeNotation.S, prime: true };
-        else if (rightColor === Center.YELLOW) return { face: CubeNotation.E, prime: false };
-        else if (rightColor === Center.WHITE) return { face: CubeNotation.E, prime: true };
+        else if (rightColor === Center.GREEN) return { face: CubeNotation.S, prime: true };
+        else if (rightColor === Center.BLUE) return { face: CubeNotation.S, prime: false };
+        else if (rightColor === Center.YELLOW) return { face: CubeNotation.E, prime: true };
+        else if (rightColor === Center.WHITE) return { face: CubeNotation.E, prime: false };
     }
 
     if (face === CubeNotation.E) {
@@ -193,8 +193,8 @@ function permuteCorners(state: CubeState, move: CubeMove) {
             break;
         case CubeNotation.S: // Treat as a simultaneous F move and B move
             if (move.double) mapping = [5, 4, 7, 6, 1, 0, 3, 2];
-            else if (move.prime) mapping = [1, 5, 6, 2, 0, 4, 7, 3];
-            else mapping = [4, 0, 3, 7, 5, 1, 2, 6];
+            else if (move.prime) mapping = [4, 0, 3, 7, 5, 1, 2, 6];
+            else mapping = [1, 5, 6, 2, 0, 4, 7, 3];
             break;
         default: return;
     }
@@ -281,8 +281,8 @@ function permuteEdges(state: CubeState, move: CubeMove) {
             break;
         case CubeNotation.S:
             if (move.double) mapping = [0, 5, 2, 7, 4, 1, 6, 3, 9, 8, 11, 10];
-            else if (move.prime) mapping = [0, 9, 2, 10, 4, 8, 6, 11, 1, 5, 7, 3];
-            else mapping = [0, 8, 2, 11, 4, 9, 6, 10, 5, 1, 3, 7];
+            else if (move.prime) mapping = [0, 8, 2, 11, 4, 9, 6, 10, 5, 1, 3, 7];
+            else mapping = [0, 9, 2, 10, 4, 8, 6, 11, 1, 5, 7, 3];
             break;
         default: return;
     }
@@ -361,6 +361,8 @@ export async function updateCubeState(move: CubeMove) {
     updateCenters(cubeState.value, move);
 
     const fixedMove = getFixedMove(move, cubeState.value.centers[0], cubeState.value.centers[1]);
+
+    console.log(fixedMove);
 
     // For each valid move, perform permutation and orientation mappings
     permuteCorners(cubeState.value, fixedMove);
