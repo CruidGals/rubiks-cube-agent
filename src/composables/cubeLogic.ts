@@ -144,7 +144,7 @@ export function useCubeLogic() {
         }
 
         // Flip angle if face is L, D, or B to maintain correct direction
-        if (move.face === CubeNotation.L || move.face === CubeNotation.D || move.face === CubeNotation.B || move.face === CubeNotation.M || move.face === CubeNotation.l || move.face === CubeNotation.d || move.face === CubeNotation.b) angle *= -1;
+        if (move.face === CubeNotation.L || move.face === CubeNotation.D || move.face === CubeNotation.B || move.face === CubeNotation.M || move.face === CubeNotation.E || move.face === CubeNotation.l || move.face === CubeNotation.d || move.face === CubeNotation.b) angle *= -1;
 
         // Make a pivot object
         const pivot = new THREE.Object3D();
