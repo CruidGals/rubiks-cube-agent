@@ -32,9 +32,20 @@ Where $CP$ is corner permutation, $CO$ is corner orientation, $EP$ is edge permu
 - **10**: BL (Back-Left)
 - **11**: BR (Back-Right)
 
+### Center Mappings
+
+- **0**: Top    (originally *White*)
+- **1**: Front  (originally *Green*)
+- **2**: Left   (originally *Orange*)
+- **3**: Back   (originally *Blue*)
+- **4**: Right  (originally *Red*)
+- **5**: Bottom (originally *Yellow*)
+
 ## How to read coordinates
 
-A solved rubik's cube state has these following values in the coordinate:
+A solved Rubik's cube state has these following values in the coordinate:
+
+`centers = [0, 1, 2, 3, 4, 5]`
 
 `CP = [0, 1, 2, 3, 4, 5, 6, 7]`
 
@@ -44,6 +55,8 @@ A solved rubik's cube state has these following values in the coordinate:
 
 `EO = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]`
 
+The centers map the orientations of the centers. Above is the index mapping of each center position, where the original index numbers represent each color mapping. This is represented in an enum within `cubeNotation.ts`.
+
 CP and EP represent the positions of pieces, which are based on the index mapping above.
 
 For CO, each piece mapping can be a value of `0, 1, 2`. This is the number of **twists** a corner is clockwise with respect to the reference frame. In the reference frame, the **white sticker** should always be facing upwards on the top layer, and facing downwards on the bottom layer to indicate correct orientation (0).
@@ -51,6 +64,8 @@ For CO, each piece mapping can be a value of `0, 1, 2`. This is the number of **
 For EO, each piece can be a value of either `0, 1`. This just means that an edge can be a good edge (0) or bad edge (1) based on the current state. [Here is a good video to watch on this](https://www.youtube.com/watch?v=fxwVmTI5nGM&t=435s).
 
 Say we do an R turn. Then the coordinates change like this:
+
+`centers = [0, 1, 2, 3, 4, 5]`
 
 `CP = [4, 1, 2, 0, 7, 5, 6, 3]`
 
@@ -65,6 +80,8 @@ See how in `CP`, the corners `0,3,4,7` move. This is because they were all curre
 The edges in `EP` are moved also with the same intuition. Notice how `EO` remains as a zero vector, because we did not perform any `F` or `B` moves.
 
 Now lets see what happens when we perform an `F` move:
+
+`centers = [0, 1, 2, 3, 4, 5]`
 
 `CP = [1, 5, 2, 3, 0, 4, 6, 7]`
 
