@@ -16,8 +16,8 @@ export const turnSpeed = ref<number>(0.0);
 // Use an enum to denote the different faces of a Rubik's Cube
 export enum CubeNotation {
     R, L, U, D, F, B, M, S, E, // Regular moves
-    WR, WL, WU, WD, WF, WB, // Wide moves
-    RX, RY, RZ // Rotation moves
+    r, l, u, d, f, b, // Wide moves
+    x, y, z // Rotation moves
 };
 
 // Type to represent movement
@@ -61,19 +61,19 @@ function grabCubesFromFace(face: CubeNotation) {
             return cubes.filter(cube => cube.position.z === 0.0);
         case CubeNotation.E:
             return cubes.filter(cube => cube.position.y === 0.0);
-        case CubeNotation.WR:
+        case CubeNotation.r:
             return cubes.filter(cube => cube.position.x >= 0.0);
-        case CubeNotation.WL:
+        case CubeNotation.l:
             return cubes.filter(cube => cube.position.x <= 0.0);
-        case CubeNotation.WU:
+        case CubeNotation.u:
             return cubes.filter(cube => cube.position.y >= 0.0);
-        case CubeNotation.WD:
+        case CubeNotation.d:
             return cubes.filter(cube => cube.position.y <= 0.0);
-        case CubeNotation.WF:
+        case CubeNotation.f:
             return cubes.filter(cube => cube.position.z >= 0.0);
-        case CubeNotation.WB:
+        case CubeNotation.b:
             return cubes.filter(cube => cube.position.z <= 0.0);
-        case CubeNotation.RX: case CubeNotation.RY: case CubeNotation.RZ:
+        case CubeNotation.x: case CubeNotation.y: case CubeNotation.z:
             return cubes
     }
 }
@@ -87,22 +87,22 @@ export function useCubeLogic() {
     function letterToCubeNotation(letter: string, wide_move: boolean = false) {
         switch (letter) {
             case "r": case "R":
-                if (wide_move) return CubeNotation.WR;
+                if (wide_move) return CubeNotation.r;
                 return CubeNotation.R;
             case "l": case "L":
-                if (wide_move) return CubeNotation.WL;
+                if (wide_move) return CubeNotation.l;
                 return CubeNotation.L;
             case "u": case "U":
-                if (wide_move) return CubeNotation.WU;
+                if (wide_move) return CubeNotation.u;
                 return CubeNotation.U;
             case "d": case "D":
-                if (wide_move) return CubeNotation.WD;
+                if (wide_move) return CubeNotation.d;
                 return CubeNotation.D;
             case "f": case "F":
-                if (wide_move) return CubeNotation.WF;
+                if (wide_move) return CubeNotation.f;
                 return CubeNotation.F;
             case "b": case "B":
-                if (wide_move) return CubeNotation.WB;
+                if (wide_move) return CubeNotation.b;
                 return CubeNotation.B;
             case "m": case "M":
                 return CubeNotation.M;
@@ -111,11 +111,11 @@ export function useCubeLogic() {
             case "e": case "E":
                 return CubeNotation.E;
             case "x": case "X":
-                return CubeNotation.RX;
+                return CubeNotation.x;
             case "y": case "Y":
-                return CubeNotation.RY;
+                return CubeNotation.y;
             case "z": case "Z":
-                return CubeNotation.RZ;
+                return CubeNotation.z;
         }
     }
 
@@ -144,7 +144,7 @@ export function useCubeLogic() {
         }
 
         // Flip angle if face is L, D, or B to maintain correct direction
-        if (move.face === CubeNotation.L || move.face === CubeNotation.D || move.face === CubeNotation.B || move.face === CubeNotation.M || move.face === CubeNotation.WL || move.face === CubeNotation.WD || move.face === CubeNotation.WB) angle *= -1;
+        if (move.face === CubeNotation.L || move.face === CubeNotation.D || move.face === CubeNotation.B || move.face === CubeNotation.M || move.face === CubeNotation.E || move.face === CubeNotation.l || move.face === CubeNotation.d || move.face === CubeNotation.b) angle *= -1;
 
         // Make a pivot object
         const pivot = new THREE.Object3D();
@@ -165,9 +165,9 @@ export function useCubeLogic() {
 
         // Get axis of rotation and rotate
         const axis = new THREE.Vector3(
-            move.face === CubeNotation.R || move.face === CubeNotation.L || move.face === CubeNotation.M || move.face === CubeNotation.WR || move.face === CubeNotation.WL || move.face === CubeNotation.RX ? 1 : 0,
-            move.face === CubeNotation.U || move.face === CubeNotation.D || move.face === CubeNotation.E || move.face === CubeNotation.WU || move.face === CubeNotation.WD || move.face === CubeNotation.RY ? 1 : 0,
-            move.face === CubeNotation.F || move.face === CubeNotation.B || move.face === CubeNotation.S || move.face === CubeNotation.WF || move.face === CubeNotation.WB || move.face === CubeNotation.RZ ? 1 : 0
+            move.face === CubeNotation.R || move.face === CubeNotation.L || move.face === CubeNotation.M || move.face === CubeNotation.r || move.face === CubeNotation.l || move.face === CubeNotation.x ? 1 : 0,
+            move.face === CubeNotation.U || move.face === CubeNotation.D || move.face === CubeNotation.E || move.face === CubeNotation.u || move.face === CubeNotation.d || move.face === CubeNotation.y ? 1 : 0,
+            move.face === CubeNotation.F || move.face === CubeNotation.B || move.face === CubeNotation.S || move.face === CubeNotation.f || move.face === CubeNotation.b || move.face === CubeNotation.z ? 1 : 0
         );
 
         // Animate rotation if there is

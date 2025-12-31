@@ -1,1 +1,50 @@
 export function isLowerCase(char: string): boolean { return char === char.toLowerCase() && char !== char.toUpperCase(); }
+
+function hasDuplicates(arr: any[]): boolean { return new Set(arr).size !== arr.length; }
+function isWithinRange(arr: number[], min: number, max: number) { return arr.every(val => val >= min && val <= max); }
+
+// Permutes the elements in arr with the mapping
+export function permute(arr: any[], mapping: number[]) {
+    
+    // Ensure arr and mapping are same length
+    if (arr.length != mapping.length) {
+        console.error("Array and mapping not same length; cannot permute.");
+        return;
+    }
+
+    // Validate mapping array
+    if (hasDuplicates(mapping)) {
+        console.error("Mapping has duplicates.");
+        return; 
+    }
+
+    // Validate mapping is within range of arr.length
+    if (!isWithinRange(mapping, 0, arr.length - 1)) {
+        console.error("Mapping is not within range of arr.length.");
+        return;
+    }
+
+    // Create new array same length as arr
+    let newArr = new Array(arr.length);
+
+    // Put elements of array into correct location
+    arr.forEach((value, idx) => {
+        newArr[mapping[idx]] = value;
+    })
+
+    // Return the array
+    return newArr;
+}
+
+// To help with orienting corners and edges. Add the mapping to arr modulo the modulus
+export function orient(arr: number[], mapping: number[], modulus: number) {
+    
+    // Ensure arr and mapping are same length
+    if (arr.length != mapping.length) {
+        console.error("Array and mapping not same length; cannot permute.");
+        return;
+    }
+
+    // Return the mapping
+    return arr.map((val, idx) => (val + mapping[idx]) % modulus)
+}

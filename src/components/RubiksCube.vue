@@ -35,7 +35,7 @@ window.addEventListener('keydown', async (event) => {
 
         // Don't proceed if invalid move
         if (move == null) return;
-
+        
         await playMove(move, turnSpeed.value, CallerType.player);
     }
 });
