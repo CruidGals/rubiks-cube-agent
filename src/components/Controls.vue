@@ -7,12 +7,17 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faChevronLeft, faChevronRight, faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
 import MarkdownIt from 'markdown-it';
 import Modal from './Modal.vue';
-import { ref, watch } from 'vue';
+import { ref, watch, inject, Ref, computed } from 'vue';
+import { OVERLAY_WIDTH } from '@/composables/constants';
 
 const showModal = ref(false);
 
-// Hiding overlay
-const overlayFolded = ref(false);
+// Computed styles for overlay width
+const overlayWidth = computed(() => `${OVERLAY_WIDTH}px`);
+const overlayTransform = computed(() => `translateX(-${OVERLAY_WIDTH}px)`);
+
+// Hiding overlay - get from parent or create local
+const overlayFolded = inject<Ref<boolean>>('overlayFolded', ref(false));
 
 // Markdown for the modal
 const md = new MarkdownIt();
@@ -82,8 +87,8 @@ async function onResetCube() {
 </script>
 
 <template>
-    <div ref="controlsRef" class="controls">
-        <div ref="overlayRef" class="overlay" v-if="!overlayFolded">
+    <div ref="controlsRef" class="controls" :class="{ 'controls-hidden': overlayFolded }">
+        <div ref="overlayRef" class="overlay">
             <h2>Turn Speed {{ turnSpeed / 10 }}s</h2>
             <Slider v-model="turnSpeed"/>
 
@@ -123,6 +128,7 @@ async function onResetCube() {
 </template>
 
 <style scoped>
+
     .controls {
         display: flex;
         flex-direction: row;
@@ -132,6 +138,8 @@ async function onResetCube() {
         left: 0;
         z-index: 10;
         height: 100%;
+
+        transition: transform 0.3s ease-in-out;
     }
 
     .overlay {
@@ -141,6 +149,7 @@ async function onResetCube() {
 
         background-color: rgb(40, 40, 40);
         border-radius: 0 0px 10px 0;
+        width: v-bind('overlayWidth');
         height: 100%;
         padding: 20px;
     }
@@ -223,6 +232,11 @@ async function onResetCube() {
     .button:hover {
         background-color: rgb(80,80,80);
         cursor: grab;
+    }
+
+    /* Animations */
+    .controls-hidden {
+        transform: v-bind('overlayTransform');
     }
 
 </style>
