@@ -5,6 +5,7 @@ import { updatedCubeMoves, moveCount, currMove, usePlayMoveLogic, currPlaying } 
 import { showFaceSymbols, resetCube } from '@/composables/cubeVisual';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faChevronLeft, faChevronRight, faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
+import { cubeState } from '@/composables/cubeNotation';
 import MarkdownIt from 'markdown-it';
 import Modal from './Modal.vue';
 import { ref, watch, inject, Ref, computed } from 'vue';
@@ -18,6 +19,9 @@ const overlayTransform = computed(() => `translateX(-${OVERLAY_WIDTH}px)`);
 
 // Hiding overlay - get from parent or create local
 const overlayFolded = inject<Ref<boolean>>('overlayFolded', ref(false));
+
+// For the debug text
+const showDebugText = ref(false);
 
 // Markdown for the modal
 const md = new MarkdownIt();
@@ -84,6 +88,19 @@ async function onResetCube() {
     playSliderValue.value = 0;
 }
 
+function centersToString(centers: number[]) {
+    return centers.map(center => {
+        switch (center) {
+            case 0: return 'W';
+            case 1: return 'G';
+            case 2: return 'O';
+            case 3: return 'B';
+            case 4: return 'R';
+            case 5: return 'Y';
+        }
+    })
+}
+
 </script>
 
 <template>
@@ -96,6 +113,10 @@ async function onResetCube() {
 
             <label>
                 Show Face Symbols <input type="checkbox" v-model="showFaceSymbols">
+            </label>
+
+            <label>
+                Show Debug Text <input type="checkbox" v-model="showDebugText">
             </label>
 
             <!-- Modal for keybinds -->
@@ -125,6 +146,15 @@ async function onResetCube() {
             <FontAwesomeIcon :icon="overlayFolded ? faChevronRight : faChevronLeft" />
         </div>
     </div>
+
+    <!-- Floating text to show the cube perm, orientation, etc. -->
+    <div v-if="showDebugText" class="floating-text">
+        <p>Centers: {{ centersToString(cubeState.centers) }}</p>
+        <p>CP: {{ cubeState.cp }}</p>
+        <p>CO: {{ cubeState.co }}</p>
+        <p>EP: {{ cubeState.ep }}</p>
+        <p>EO: {{ cubeState.eo }}</p>
+    </div>
 </template>
 
 <style scoped>
@@ -145,6 +175,7 @@ async function onResetCube() {
     .overlay {
         display: flex;
         flex-direction: column;
+        align-items: center;
         gap: 10px;
 
         background-color: rgb(40, 40, 40);
@@ -237,6 +268,16 @@ async function onResetCube() {
     /* Animations */
     .controls-hidden {
         transform: v-bind('overlayTransform');
+    }
+
+    .floating-text {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        z-index: 10;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
     }
 
 </style>

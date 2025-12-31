@@ -362,8 +362,6 @@ export async function updateCubeState(move: CubeMove) {
 
     const fixedMove = getFixedMove(move, cubeState.value.centers[0], cubeState.value.centers[1]);
 
-    console.log(fixedMove);
-
     // For each valid move, perform permutation and orientation mappings
     permuteCorners(cubeState.value, fixedMove);
     orientCorners(cubeState.value, fixedMove);
