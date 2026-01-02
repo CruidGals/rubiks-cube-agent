@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SceneShell from './components/SceneShell.vue';
-import Controls from './components/Controls.vue';
+import Overlay from './components/Overlay.vue';
 import { ref, provide } from 'vue';
 
 const overlayFolded = ref(false);
@@ -9,7 +9,7 @@ provide('overlayFolded', overlayFolded);
 
 <template>
   <div class="app">
-    <Controls />
+    <Overlay />
     <SceneShell />
   </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Slider from './Slider.vue';
+import Slider from '../Slider.vue';
 import { turnSpeed, isRotating } from '@/composables/cubeLogic';
 import { updatedCubeMoves, moveCount, currMove, usePlayMoveLogic, currPlaying } from '@/composables/playMoveLogic';
 import { showFaceSymbols, resetCube } from '@/composables/cubeVisual';
@@ -7,25 +7,21 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faChevronLeft, faChevronRight, faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
 import { cubeState, resetCubeState } from '@/composables/cubeNotation';
 import MarkdownIt from 'markdown-it';
-import Modal from './Modal.vue';
-import { ref, watch, inject, Ref, computed } from 'vue';
-import { OVERLAY_WIDTH } from '@/composables/constants';
+import Modal from '../Modal.vue';
+import { ref, watch } from 'vue';
+import keybindMd from '../../assets/keybinds.md?raw';
+
+const props = defineProps<{
+    width?: string;
+}>();
 
 const showModal = ref(false);
-
-// Computed styles for overlay width
-const overlayWidth = computed(() => `${OVERLAY_WIDTH}px`);
-const overlayTransform = computed(() => `translateX(-${OVERLAY_WIDTH}px)`);
-
-// Hiding overlay - get from parent or create local
-const overlayFolded = inject<Ref<boolean>>('overlayFolded', ref(false));
 
 // For the debug text
 const showDebugText = ref(false);
 
 // Markdown for the modal
 const md = new MarkdownIt();
-import keybindMd from '../assets/keybinds.md?raw';
 const modalContent = md.render(keybindMd);
 
 // For playing moves
@@ -105,74 +101,54 @@ function centersToString(centers: number[]) {
 </script>
 
 <template>
-    <div ref="controlsRef" class="controls" :class="{ 'controls-hidden': overlayFolded }">
-        <div ref="overlayRef" class="overlay">
-            <h2>Turn Speed {{ turnSpeed / 10 }}s</h2>
-            <Slider v-model="turnSpeed"/>
+    <div ref="overlayRef" class="overlay" :style="{ width: props.width }">
+        <h2>Turn Speed {{ turnSpeed / 10 }}s</h2>
+        <Slider v-model="turnSpeed"/>
 
-            <div class="spacer"></div>
+        <div class="spacer"></div>
 
-            <label>
-                Show Face Symbols <input type="checkbox" v-model="showFaceSymbols">
-            </label>
+        <label>
+            Show Face Symbols <input type="checkbox" v-model="showFaceSymbols">
+        </label>
 
-            <label>
-                Show Debug Text <input type="checkbox" v-model="showDebugText">
-            </label>
+        <label>
+            Show Debug Text <input type="checkbox" v-model="showDebugText">
+        </label>
 
-            <!-- Modal for keybinds -->
-            <teleport to="body">
-                <Modal v-model="showModal">
-                    <div class="modal-content">
-                        <div v-html="modalContent"></div>
-                    </div>
-                </Modal>
-            </teleport>
-            <div class="button" @click="showModal = true">Show Keybinds</div>
-            <div class="button" @click="isRotating ? null : onResetCube()">Reset Cube</div>
+        <!-- Modal for keybinds -->
+        <teleport to="body">
+            <Modal v-model="showModal">
+                <div class="modal-content">
+                    <div v-html="modalContent"></div>
+                </div>
+            </Modal>
+        </teleport>
+        <div class="button" @click="showModal = true">Show Keybinds</div>
+        <div class="button" @click="isRotating ? null : onResetCube()">Reset Cube</div>
 
-            <div class="spacer"></div>
+        <div class="spacer"></div>
 
-            <!-- Move the cube by giving it a set of moves -->
-            <textarea :class="invalidMoveSet ? 'input-error' : '' " v-model="moveSet" placeholder="R U R' U' ..." style="max-width: 160px; min-width: 160px;"/>
-            <Slider :max-val="moveCount" :on-mouse-down="playSliderOnMouseDown" v-model="playSliderValue"/>
-            <div class="play-button-row">
-                <div class="button play-button" @click="stepMove(turnSpeed, true)"><FontAwesomeIcon :icon="faChevronLeft" /></div>
-                <div class="button play-button" @click="!currPlaying ? play() : currPlaying = false" ><FontAwesomeIcon :icon="!currPlaying ? faPlay : faPause" /></div>
-                <div class="button play-button" @click="stepMove(turnSpeed)"><FontAwesomeIcon :icon="faChevronRight" /></div>
-            </div>
+        <!-- Move the cube by giving it a set of moves -->
+        <textarea :class="invalidMoveSet ? 'input-error' : '' " v-model="moveSet" placeholder="R U R' U' ..." style="max-width: 160px; min-width: 160px;"/>
+        <Slider :max-val="moveCount" :on-mouse-down="playSliderOnMouseDown" v-model="playSliderValue"/>
+        <div class="play-button-row">
+            <div class="button play-button" @click="stepMove(turnSpeed, true)"><FontAwesomeIcon :icon="faChevronLeft" /></div>
+            <div class="button play-button" @click="!currPlaying ? play() : currPlaying = false" ><FontAwesomeIcon :icon="!currPlaying ? faPlay : faPause" /></div>
+            <div class="button play-button" @click="stepMove(turnSpeed)"><FontAwesomeIcon :icon="faChevronRight" /></div>
         </div>
 
-        <div @click="overlayFolded = !overlayFolded;" class="fold-button" >
-            <FontAwesomeIcon :icon="overlayFolded ? faChevronRight : faChevronLeft" />
+        <!-- Floating text to show the cube perm, orientation, etc. -->
+        <div v-if="showDebugText" class="floating-text">
+            <p>Centers: {{ centersToString(cubeState.centers) }}</p>
+            <p>CP: {{ cubeState.cp }}</p>
+            <p>CO: {{ cubeState.co }}</p>
+            <p>EP: {{ cubeState.ep }}</p>
+            <p>EO: {{ cubeState.eo }}</p>
         </div>
-    </div>
-
-    <!-- Floating text to show the cube perm, orientation, etc. -->
-    <div v-if="showDebugText" class="floating-text">
-        <p>Centers: {{ centersToString(cubeState.centers) }}</p>
-        <p>CP: {{ cubeState.cp }}</p>
-        <p>CO: {{ cubeState.co }}</p>
-        <p>EP: {{ cubeState.ep }}</p>
-        <p>EO: {{ cubeState.eo }}</p>
     </div>
 </template>
 
 <style scoped>
-
-    .controls {
-        display: flex;
-        flex-direction: row;
-
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 10;
-        height: 100%;
-
-        transition: transform 0.3s ease-in-out;
-    }
-
     .overlay {
         display: flex;
         flex-direction: column;
@@ -181,19 +157,8 @@ function centersToString(centers: number[]) {
 
         background-color: rgb(40, 40, 40);
         border-radius: 0 0px 10px 0;
-        width: v-bind('overlayWidth');
         height: 100%;
         padding: 20px;
-    }
-
-    .fold-button {
-        background-color: rgb(40, 40, 40);
-        border-radius: 0px 10px 10px 0px;
-        height: fit-content;
-
-        font-size: large;
-        font-weight: bolder;
-
     }
 
     .button {
@@ -220,10 +185,6 @@ function centersToString(centers: number[]) {
         justify-content: center;
         align-items: center;
         gap: 20px;
-    }
-
-    .bold {
-        font-weight: 900;
     }
 
     .spacer {
@@ -257,29 +218,21 @@ function centersToString(centers: number[]) {
         padding: 5px;
     }
 
-    /* Interactive style */
-    .fold-button:hover {
-        cursor: grab;
-    }
-
     .button:hover {
         background-color: rgb(80,80,80);
         cursor: grab;
     }
 
-    /* Animations */
-    .controls-hidden {
-        transform: v-bind('overlayTransform');
-    }
-
     .floating-text {
-        position: absolute;
-        top: 0;
+        position: fixed;
+        top: 10%;
         left: 50%;
+        transform: translate(-50%, -50%);
         z-index: 10;
         color: white;
         font-size: 16px;
         font-weight: bold;
+        pointer-events: none;
     }
-
 </style>
+
