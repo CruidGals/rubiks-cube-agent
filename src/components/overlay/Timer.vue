@@ -22,7 +22,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="overlay" :style="{ width: props.width }">
+    <div class="timer-overlay" :style="{ width: props.width }">
         <div class="button" @click="generateScramble">Generate Scramble</div>
 
         <h3 class="scramble">{{ scramble }}</h3>
@@ -30,7 +30,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-    .overlay {
+    .timer-overlay {
         display: flex;
         flex-direction: column;
         align-items: center;

@@ -41,7 +41,7 @@ function handleOverlayButtonClick(overlayType: OverlayType) {
 </script>
 
 <template>
-    <div ref="controlsRef" class="controls" :class="{ 'controls-hidden': overlayFolded }">
+    <div ref="overlayRef" class="overlay" :class="{ 'overlay-hidden': overlayFolded }">
         <Controls v-show="shownOverlay === OverlayType.CONTROLS" :width="overlayWidth" />
         <Timer v-show="shownOverlay === OverlayType.TIMER" :width="overlayWidth" />
 
@@ -58,7 +58,7 @@ function handleOverlayButtonClick(overlayType: OverlayType) {
 </template>
 
 <style scoped>
-    .controls {
+    .overlay {
         display: flex;
         flex-direction: row;
 
@@ -97,7 +97,7 @@ function handleOverlayButtonClick(overlayType: OverlayType) {
     }
 
     /* Animations */
-    .controls-hidden {
+    .overlay-hidden {
         transform: v-bind('overlayTransform');
     }
 </style>

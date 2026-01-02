@@ -101,7 +101,7 @@ function centersToString(centers: number[]) {
 </script>
 
 <template>
-    <div class="overlay" :style="{ width: props.width }">
+    <div class="control" :style="{ width: props.width }">
         <h2>Turn Speed {{ turnSpeed / 10 }}s</h2>
         <Slider v-model="turnSpeed"/>
 
@@ -149,7 +149,7 @@ function centersToString(centers: number[]) {
 </template>
 
 <style scoped>
-    .overlay {
+    .control {
         display: flex;
         flex-direction: column;
         align-items: center;
