@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { randomScrambleForEvent } from "cubing/scramble";
 
 const props = defineProps<{
@@ -13,6 +13,11 @@ async function generateScramble() {
     let res = await randomScrambleForEvent("333");
     scramble.value = res.toString();
 }
+
+onMounted(() => {
+    // Generate scramble once when component is first mounted
+    generateScramble();
+})
 
 </script>
 
