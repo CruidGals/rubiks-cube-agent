@@ -699,6 +699,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@optique/core@npm:0.9.0-dev.187+992128e2, @optique/core@npm:v0.9.0-dev.187":
+  version: 0.9.0-dev.187
+  resolution: "@optique/core@npm:0.9.0-dev.187"
+  checksum: 10c0/402fc1276429e3e92ec376edf75fcaceff2ee672d9da5e200fc28e2762a67580ea6630c82d68d4aaa0f1679796d1dff188033e2aa5ad67e1054f7993fea93786
+  languageName: node
+  linkType: hard
+
+"@optique/run@npm:v0.9.0-dev.187":
+  version: 0.9.0-dev.187
+  resolution: "@optique/run@npm:0.9.0-dev.187"
+  dependencies:
+    "@optique/core": "npm:0.9.0-dev.187+992128e2"
+  checksum: 10c0/d8aca75011892d4796320da9e9ea4c22e05191e39769984a4bf8297be610af0be9af18ea0cb1875a67e1db173ff5aa124c84ea3cf260fd17f5ea736f1203d083
+  languageName: node
+  linkType: hard
+
 "@pmndrs/pointer-events@npm:^6.6.17":
   version: 6.6.26
   resolution: "@pmndrs/pointer-events@npm:6.6.26"
@@ -954,6 +970,27 @@ __metadata:
     fflate: "npm:~0.8.2"
     meshoptimizer: "npm:~0.22.0"
   checksum: 10c0/effa194bbfa0593433e41f573c27a663796b385c44f5f6124128abf6b1490bb14462435bc9c3a418464def4d2a05820722850569ffe2016d5dff583025598a23
+  languageName: node
+  linkType: hard
+
+"@types/three@npm:^0.169.0":
+  version: 0.169.0
+  resolution: "@types/three@npm:0.169.0"
+  dependencies:
+    "@tweenjs/tween.js": "npm:~23.1.3"
+    "@types/stats.js": "npm:*"
+    "@types/webxr": "npm:*"
+    "@webgpu/types": "npm:*"
+    fflate: "npm:~0.8.2"
+    meshoptimizer: "npm:~0.18.1"
+  checksum: 10c0/d5f588dcc9df02875d46e5e6ea8ea6dc346cd1e4c0fbe7bcca4c8d9584f82ac39a951788a79fc2ffae3d5e232f99e66046adec8f93fdf51d30561a4a00c52b40
+  languageName: node
+  linkType: hard
+
+"@types/web-bluetooth@npm:^0.0.20":
+  version: 0.0.20
+  resolution: "@types/web-bluetooth@npm:0.0.20"
+  checksum: 10c0/3a49bd9396506af8f1b047db087aeeea9fe4301b7fad4fe06ae0f6e00d331138caae878fd09e6410658b70b4aaf10e4b191c41c1a5ff72211fe58da290c7d003
   languageName: node
   linkType: hard
 
@@ -1410,6 +1447,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"comlink@npm:^4.4.1":
+  version: 4.4.2
+  resolution: "comlink@npm:4.4.2"
+  checksum: 10c0/38aa1f455cf08e94aaa8fc494fd203cc0ef02ece6c21404b7931ce17567e8a72deacddab98aa5650cfd78332ff24c34610586f6fb27fd19dc77e753ed1980deb
+  languageName: node
+  linkType: hard
+
 "convert-source-map@npm:^2.0.0":
   version: 2.0.0
   resolution: "convert-source-map@npm:2.0.0"
@@ -1437,6 +1481,24 @@ __metadata:
   version: 3.2.3
   resolution: "csstype@npm:3.2.3"
   checksum: 10c0/cd29c51e70fa822f1cecd8641a1445bed7063697469d35633b516e60fe8c1bde04b08f6c5b6022136bb669b64c63d4173af54864510fbb4ee23281801841a3ce
+  languageName: node
+  linkType: hard
+
+"cubing@npm:^0.61.1":
+  version: 0.61.1
+  resolution: "cubing@npm:0.61.1"
+  dependencies:
+    "@optique/core": "npm:v0.9.0-dev.187"
+    "@optique/run": "npm:v0.9.0-dev.187"
+    "@types/three": "npm:^0.169.0"
+    "@types/web-bluetooth": "npm:^0.0.20"
+    comlink: "npm:^4.4.1"
+    random-uint-below: "npm:v3.3.0"
+    three: "npm:^0.170.0"
+    type-fest: "npm:^5.2.0"
+  bin:
+    scramble: dist/bin/scramble.js
+  checksum: 10c0/dda0dae6487d5d345b510d611d3d90805c86718829c33f8055ab2d43fec0163aab08d0568f3e130d20d36692ebd0b66bfddae79f59420425bf703e77eb281752
   languageName: node
   linkType: hard
 
@@ -1984,6 +2046,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"meshoptimizer@npm:~0.18.1":
+  version: 0.18.1
+  resolution: "meshoptimizer@npm:0.18.1"
+  checksum: 10c0/8a825c58b20b65585e8d00788843929b60c66ba4297e89afaa49f7c51ab9a0f7b9130f90cc9ad1b9b48b3d1bee3beb1bc93608acba0d73e78995c3e6e5ca436b
+  languageName: node
+  linkType: hard
+
 "meshoptimizer@npm:~0.22.0":
   version: 0.22.0
   resolution: "meshoptimizer@npm:0.22.0"
@@ -2287,6 +2356,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"random-uint-below@npm:v3.3.0":
+  version: 3.3.0
+  resolution: "random-uint-below@npm:3.3.0"
+  checksum: 10c0/3eb37580a9c9af8f108ddadb0dea6115d768fadde696979e605aa1b99c90d84617731450bb9598bd197501e22b6a85351672be32d5a441c14cbab5f18cb0a231
+  languageName: node
+  linkType: hard
+
 "readable-stream@npm:>=1.0.33-1 <1.1.0-0":
   version: 1.0.34
   resolution: "readable-stream@npm:1.0.34"
@@ -2406,6 +2482,7 @@ __metadata:
     "@tresjs/cientos": "npm:^5.2.0"
     "@tresjs/core": "npm:^5.2.0"
     "@vitejs/plugin-vue": "npm:^6.0.3"
+    cubing: "npm:^0.61.1"
     gsap: "npm:^3.14.2"
     markdown-it: "npm:^14.1.0"
     three: "npm:^0.182.0"
@@ -2545,6 +2622,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tagged-tag@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "tagged-tag@npm:1.0.0"
+  checksum: 10c0/91d25c9ffb86a91f20522cefb2cbec9b64caa1febe27ad0df52f08993ff60888022d771e868e6416cf2e72dab68449d2139e8709ba009b74c6c7ecd4000048d1
+  languageName: node
+  linkType: hard
+
 "tar@npm:^7.5.2":
   version: 7.5.2
   resolution: "tar@npm:7.5.2"
@@ -2633,6 +2717,15 @@ __metadata:
   version: 3.0.1
   resolution: "totalist@npm:3.0.1"
   checksum: 10c0/4bb1fadb69c3edbef91c73ebef9d25b33bbf69afe1e37ce544d5f7d13854cda15e47132f3e0dc4cafe300ddb8578c77c50a65004d8b6e97e77934a69aa924863
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^5.2.0":
+  version: 5.3.1
+  resolution: "type-fest@npm:5.3.1"
+  dependencies:
+    tagged-tag: "npm:^1.0.0"
+  checksum: 10c0/3282cf11f5e8708321c109b5a72967702cf4c3b928b4d77f5819600b23915dc6a6b8f16cde4182cfbad308973ed3eeea544825cafe9657634ac1f331dc940315
   languageName: node
   linkType: hard
 
