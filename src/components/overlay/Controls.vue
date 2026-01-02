@@ -101,7 +101,7 @@ function centersToString(centers: number[]) {
 </script>
 
 <template>
-    <div ref="overlayRef" class="overlay" :style="{ width: props.width }">
+    <div class="overlay" :style="{ width: props.width }">
         <h2>Turn Speed {{ turnSpeed / 10 }}s</h2>
         <Slider v-model="turnSpeed"/>
 
