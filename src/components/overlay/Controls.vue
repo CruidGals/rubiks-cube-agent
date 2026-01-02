@@ -2,10 +2,10 @@
 import Slider from '../Slider.vue';
 import { turnSpeed, isRotating } from '@/composables/cubeLogic';
 import { updatedCubeMoves, moveCount, currMove, usePlayMoveLogic, currPlaying } from '@/composables/playMoveLogic';
-import { showFaceSymbols, resetCube } from '@/composables/cubeVisual';
+import { showFaceSymbols } from '@/composables/cubeVisual';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faChevronLeft, faChevronRight, faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
-import { cubeState, resetCubeState } from '@/composables/cubeNotation';
+import { cubeState } from '@/composables/cubeNotation';
 import MarkdownIt from 'markdown-it';
 import Modal from '../Modal.vue';
 import { ref, watch } from 'vue';
@@ -25,7 +25,7 @@ const md = new MarkdownIt();
 const modalContent = md.render(keybindMd);
 
 // For playing moves
-const { forceMoveCompletion, readMoves, playMoves, playMoveRange, stepMove } = usePlayMoveLogic();
+const { forceMoveCompletion, readMoves, playMoves, playMoveRange, stepMove, onResetCube } = usePlayMoveLogic();
 const moveSet = ref('');
 const invalidMoveSet = ref(false);
 
@@ -71,18 +71,6 @@ function play() {
     // Clear timeout for reading moves
     clearTimeout(inputTimer);
     playMoves(moveSet.value, turnSpeed.value);
-}
-
-// Handling reset cube
-async function onResetCube() {
-    // Make sure nothing is being played during reset
-    await forceMoveCompletion();
-
-    // Reset eveyrthing
-    resetCube();
-    resetCubeState();
-    currMove.value = 0;
-    playSliderValue.value = 0;
 }
 
 function centersToString(centers: number[]) {

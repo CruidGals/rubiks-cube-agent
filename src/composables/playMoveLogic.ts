@@ -1,7 +1,8 @@
 import { CubeMove, isRotating, useCubeLogic, activeTween } from "./cubeLogic";
 import { ref } from "vue";
 import { isLowerCase } from "./util";
-import { updateCubeState } from "./cubeNotation";
+import { resetCube } from "./cubeVisual";
+import { updateCubeState, resetCubeState } from "./cubeNotation";
 
 export enum CallerType {
     player,
@@ -234,6 +235,17 @@ export function usePlayMoveLogic() {
             else isForcingMoveCompletion.value = false;
         }
     }
+
+    // Handling reset cube
+    async function onResetCube() {
+        // Make sure nothing is being played during reset
+        await forceMoveCompletion();
+
+        // Reset eveyrthing
+        resetCube();
+        resetCubeState();
+        currMove.value = 0;
+    }
  
-    return { prepareMove, forceMoveCompletion, readMoves, playMove, playMoves, playMoveRange, stepMove }
+    return { prepareMove, forceMoveCompletion, readMoves, playMove, playMoves, playMoveRange, stepMove, onResetCube }
 }

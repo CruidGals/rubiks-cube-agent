@@ -2,6 +2,9 @@
 
 import { ref, onMounted } from 'vue';
 import { randomScrambleForEvent } from "cubing/scramble";
+import { usePlayMoveLogic } from '@/composables/playMoveLogic';
+
+const { playMoves, onResetCube } = usePlayMoveLogic();
 
 const props = defineProps<{
     width?: string;
@@ -14,6 +17,14 @@ async function generateScramble() {
     scramble.value = res.toString();
 }
 
+async function applyScramble() {
+    // Reset the cube
+    await onResetCube();
+
+    // Apply the scramble
+    await playMoves(scramble.value, 0);
+}
+
 onMounted(() => {
     // Generate scramble once when component is first mounted
     generateScramble();
@@ -24,8 +35,9 @@ onMounted(() => {
 <template>
     <div class="timer-overlay" :style="{ width: props.width }">
         <div class="button" @click="generateScramble">Generate Scramble</div>
+        <div class="button" @click="applyScramble">Apply Scramble</div>
 
-        <h3 class="scramble">{{ scramble }}</h3>
+            <h3 class="scramble">{{ scramble }}</h3>
     </div>
 </template>
 
