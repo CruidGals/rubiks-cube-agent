@@ -29,7 +29,18 @@ const cubeInitialState: CubeState = {
     eo: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 };
 
-export const cubeState = ref<CubeState>(cubeInitialState);
+// Helper function to create a deep copy of the initial state
+function createInitialState(): CubeState {
+    return {
+        centers: [...cubeInitialState.centers],
+        cp: [...cubeInitialState.cp],
+        co: [...cubeInitialState.co],
+        ep: [...cubeInitialState.ep],
+        eo: [...cubeInitialState.eo]
+    };
+}
+
+export const cubeState = ref<CubeState>(createInitialState());
 
 // We want to get the move that would be played if white top green front
 // Create fixed arrays representing the colors in relation to white top green front
@@ -356,7 +367,7 @@ function updateCenters(state: CubeState, move: CubeMove) {
     state.centers = permute(state.centers, mapping);
 }
 
-export async function updateCubeState(move: CubeMove) {
+export function updateCubeState(move: CubeMove) {
     // Update centers first if doing a slice move
     updateCenters(cubeState.value, move);
 
@@ -367,4 +378,8 @@ export async function updateCubeState(move: CubeMove) {
     orientCorners(cubeState.value, fixedMove);
     permuteEdges(cubeState.value, fixedMove);
     orientEdges(cubeState.value, fixedMove);
+}
+
+export function resetCubeState() {
+    cubeState.value = createInitialState();
 }

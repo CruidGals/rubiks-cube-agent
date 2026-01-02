@@ -5,7 +5,7 @@ import { updatedCubeMoves, moveCount, currMove, usePlayMoveLogic, currPlaying } 
 import { showFaceSymbols, resetCube } from '@/composables/cubeVisual';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faChevronLeft, faChevronRight, faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
-import { cubeState } from '@/composables/cubeNotation';
+import { cubeState, resetCubeState } from '@/composables/cubeNotation';
 import MarkdownIt from 'markdown-it';
 import Modal from './Modal.vue';
 import { ref, watch, inject, Ref, computed } from 'vue';
@@ -84,6 +84,7 @@ async function onResetCube() {
 
     // Reset eveyrthing
     resetCube();
+    resetCubeState();
     currMove.value = 0;
     playSliderValue.value = 0;
 }
