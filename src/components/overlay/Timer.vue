@@ -1,8 +1,21 @@
 <script setup lang="ts">
 
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { randomScrambleForEvent } from "cubing/scramble";
 import { usePlayMoveLogic } from '@/composables/playMoveLogic';
+import { useTimestamp } from '@vueuse/core';
+import MarkdownIt from 'markdown-it';
+import Modal from '../models/Modal.vue';
+import { isRotating } from '@/composables/cubeLogic';
+import { isSolved } from '@/composables/cubeNotation';
+
+// Makrdown for the timer functionality
+import timerMd from '../../assets/timer.md?raw';
+const md = new MarkdownIt();
+const modalContent = md.render(timerMd);
+
+const showModal = ref(false);
+const { timestamp, pause, resume } = useTimestamp({ controls: true });
 
 const { playMoves, onResetCube } = usePlayMoveLogic();
 
@@ -25,10 +38,43 @@ async function applyScramble() {
     await playMoves(scramble.value, 0);
 }
 
+// Stop watch functionality
+const isRunning = ref(false);
+const startTime = ref(Date.now());
+const currTime = computed(() => {
+    return Math.max(0, Math.round((Number(timestamp.value) - startTime.value)) / 1000);
+});
+
+// Reset the timer (just pause timestamp and set it to start time)
+function resetTimer() {
+    pause();
+    startTime.value = Date.now();
+    isRunning.value = false;
+}
+
 onMounted(() => {
+    // Reset Timer
+    resetTimer();
+
     // Generate scramble once when component is first mounted
     generateScramble();
 })
+
+// Use the watch function to detect if start rotation cube
+watch(isRotating, (newVal) => {
+    if (newVal && !isRunning.value) {
+        console.log("Starting timer");
+        startTime.value = Date.now();
+        resume();
+        isRunning.value = true;
+    }
+
+    // At end of each rotation, check if solved cube
+    if (!newVal && isSolved.value) {
+        isRunning.value = false;
+        pause();
+    }
+});
 
 </script>
 
@@ -37,7 +83,25 @@ onMounted(() => {
         <div class="button" @click="generateScramble">Generate Scramble</div>
         <div class="button" @click="applyScramble">Apply Scramble</div>
 
-            <h3 class="scramble">{{ scramble }}</h3>
+        <h3 class="scramble">{{ scramble }}</h3>
+        <div class="horizontal-divider"></div>
+
+        <!-- Modal for timer functionality -->
+        <teleport to="body">
+            <Modal v-model="showModal">
+                <div class="modal-content">
+                    <div v-html="modalContent"></div>
+                </div>
+            </Modal>
+        </teleport>
+
+        <div class="stopwatch">
+            <div class="stopwatch-time">{{ currTime.toFixed(3) }}</div>
+            <div class="stopwatch-controls">
+                <div class="button stopwatch-button-small" @click="showModal = true">?</div>
+                <div class="button stopwatch-button-large" @click="resetTimer">Reset Timer</div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -76,4 +140,63 @@ onMounted(() => {
         background-color: rgb(80,80,80);
         cursor: grab;
     }
+
+    .horizontal-divider {
+        width: 100%;
+        height: 1px;
+        background-color: rgb(80,80,80);
+    }
+
+    /* Stopwatch specific styles */
+
+    .stopwatch {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;    
+    }
+
+    .stopwatch-time {
+        font-size: 2rem;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .stopwatch-controls {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .stopwatch-controls .button {
+        padding: 0 10px;
+    }
+
+    .stopwatch-button-small {
+        flex: 0 0 auto;
+        width: auto;
+    }
+
+    .stopwatch-button-large {
+        flex: 1;
+        width: auto;
+    }
+
+    .modal-content {    
+        background-color: black;
+        color: white;
+        margin: 20vw;
+        padding: 50px;
+        border-radius: 10px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
+
 </style>

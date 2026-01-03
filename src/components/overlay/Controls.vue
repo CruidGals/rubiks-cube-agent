@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Slider from '../Slider.vue';
+import Slider from '../models/Slider.vue';
 import { turnSpeed, isRotating } from '@/composables/cubeLogic';
 import { updatedCubeMoves, moveCount, currMove, usePlayMoveLogic, currPlaying } from '@/composables/playMoveLogic';
 import { showFaceSymbols } from '@/composables/cubeVisual';
@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faChevronLeft, faChevronRight, faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
 import { cubeState } from '@/composables/cubeNotation';
 import MarkdownIt from 'markdown-it';
-import Modal from '../Modal.vue';
+import Modal from '../models/Modal.vue';
 import { ref, watch } from 'vue';
 import keybindMd from '../../assets/keybinds.md?raw';
 
