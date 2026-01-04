@@ -1,7 +1,8 @@
 import { CubeMove, isRotating, useCubeLogic, activeTween } from "./cubeLogic";
 import { ref } from "vue";
 import { isLowerCase } from "./util";
-import { updateCubeState } from "./cubeNotation";
+import { resetCube } from "./cubeVisual";
+import { updateCubeState, resetCubeState } from "./cubeNotation";
 
 export enum CallerType {
     player,
@@ -24,6 +25,9 @@ export const currMove = ref<number>(0);
 
 // Force move completion to prevent race condition
 const isForcingMoveCompletion = ref(false);
+
+// Track the last move played (for timer to check if it's a rotation move)
+export const lastMove = ref<CubeMove | null>(null);
 
 export function usePlayMoveLogic() {
 
@@ -105,6 +109,9 @@ export function usePlayMoveLogic() {
     async function playMove(move: CubeMove, turnSpeed: number, caller: CallerType) {
         // If already playing a set of moves, don't do it
         if (isRotating.value || isPlaying.value) return;
+
+        // Track the last move (for timer to check if it's a rotation move)
+        lastMove.value = move;
 
         // Begin playing the moves to the user
         caller == CallerType.player ? isRotating.value = true : isPlaying.value = true;
@@ -234,6 +241,17 @@ export function usePlayMoveLogic() {
             else isForcingMoveCompletion.value = false;
         }
     }
+
+    // Handling reset cube
+    async function onResetCube() {
+        // Make sure nothing is being played during reset
+        await forceMoveCompletion();
+
+        // Reset eveyrthing
+        resetCube();
+        resetCubeState();
+        currMove.value = 0;
+    }
  
-    return { prepareMove, forceMoveCompletion, readMoves, playMove, playMoves, playMoveRange, stepMove }
+    return { prepareMove, forceMoveCompletion, readMoves, playMove, playMoves, playMoveRange, stepMove, onResetCube }
 }

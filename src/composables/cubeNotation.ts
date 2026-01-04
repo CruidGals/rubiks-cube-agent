@@ -1,5 +1,5 @@
 import { CubeMove, CubeNotation } from "./cubeLogic";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { orient, permute } from "./util";
 
 enum Center {
@@ -383,3 +383,10 @@ export function updateCubeState(move: CubeMove) {
 export function resetCubeState() {
     cubeState.value = createInitialState();
 }
+
+export const isSolved = computed(() => {
+    return cubeState.value.co.every(co => co === 0) &&
+           cubeState.value.eo.every(eo => eo === 0) &&
+           cubeState.value.cp.every((cp, index) => cp === cubeInitialState.cp[index]) &&
+           cubeState.value.ep.every((ep, index) => ep === cubeInitialState.ep[index]);
+});
