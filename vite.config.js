@@ -10,10 +10,13 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
+  worker: {
+    format: 'es'
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-  base: 'rubiks-cube-agent',
+  base: '/rubiks-cube-agent/',
 })
