@@ -26,6 +26,9 @@ export const currMove = ref<number>(0);
 // Force move completion to prevent race condition
 const isForcingMoveCompletion = ref(false);
 
+// Track the last move played (for timer to check if it's a rotation move)
+export const lastMove = ref<CubeMove | null>(null);
+
 export function usePlayMoveLogic() {
 
     function prepareMove(event: KeyboardEvent) {
@@ -106,6 +109,9 @@ export function usePlayMoveLogic() {
     async function playMove(move: CubeMove, turnSpeed: number, caller: CallerType) {
         // If already playing a set of moves, don't do it
         if (isRotating.value || isPlaying.value) return;
+
+        // Track the last move (for timer to check if it's a rotation move)
+        lastMove.value = move;
 
         // Begin playing the moves to the user
         caller == CallerType.player ? isRotating.value = true : isPlaying.value = true;

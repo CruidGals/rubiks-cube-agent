@@ -2,11 +2,11 @@
 
 import { ref, computed, onMounted, watch } from 'vue';
 import { randomScrambleForEvent } from "cubing/scramble";
-import { usePlayMoveLogic } from '@/composables/playMoveLogic';
+import { usePlayMoveLogic, lastMove } from '@/composables/playMoveLogic';
 import { useTimestamp } from '@vueuse/core';
 import MarkdownIt from 'markdown-it';
 import Modal from '../models/Modal.vue';
-import { isRotating } from '@/composables/cubeLogic';
+import { isRotating, CubeNotation } from '@/composables/cubeLogic';
 import { isSolved } from '@/composables/cubeNotation';
 
 // Makrdown for the timer functionality
@@ -31,8 +31,9 @@ async function generateScramble() {
 }
 
 async function applyScramble() {
-    // Reset the cube
+    // Reset the cube and timer
     await onResetCube();
+    resetTimer();
 
     // Apply the scramble
     await playMoves(scramble.value, 0);
@@ -63,7 +64,15 @@ onMounted(() => {
 // Use the watch function to detect if start rotation cube
 watch(isRotating, (newVal) => {
     if (newVal && !isRunning.value) {
-        console.log("Starting timer");
+        // Don't start timer if the last move was a rotation move (x, y, z)
+        if (lastMove.value && (
+            lastMove.value.face === CubeNotation.x ||
+            lastMove.value.face === CubeNotation.y ||
+            lastMove.value.face === CubeNotation.z
+        )) {
+            return; // Don't start the timer for rotation moves
+        }
+        
         startTime.value = Date.now();
         resume();
         isRunning.value = true;
