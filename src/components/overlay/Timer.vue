@@ -43,7 +43,19 @@ async function applyScramble() {
 const isRunning = ref(false);
 const startTime = ref(Date.now());
 const currTime = computed(() => {
-    return Math.max(0, Math.round((Number(timestamp.value) - startTime.value)) / 1000);
+    // Display as mm:ss.sss
+    const rawMillis = Math.max(0, Number(timestamp.value) - startTime.value);
+
+    // Calculate the components
+    const minutes = Math.floor(rawMillis / 60000);
+    const seconds = Math.floor((rawMillis % 60000) / 1000);
+    const milliseconds = rawMillis % 1000;
+
+    if (minutes > 0) {
+        return `${minutes.toString()}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
+    } else {
+        return `${seconds.toString()}.${milliseconds.toString().padStart(3, '0')}`;
+    }
 });
 
 // Reset the timer (just pause timestamp and set it to start time)
@@ -105,7 +117,7 @@ watch(isRotating, (newVal) => {
         </teleport>
 
         <div class="stopwatch">
-            <div class="stopwatch-time">{{ currTime.toFixed(3) }}</div>
+            <div class="stopwatch-time">{{ currTime }}</div>
             <div class="stopwatch-controls">
                 <div class="button stopwatch-button-small" @click="showModal = true">?</div>
                 <div class="button stopwatch-button-large" @click="resetTimer">Reset Timer</div>
