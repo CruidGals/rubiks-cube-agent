@@ -2,7 +2,7 @@ import { CubeMove, CubeNotation } from "../cubeLogic";
 import { computed, ref } from "vue";
 import { orient, permute } from "../util";
 
-enum Center {
+enum Color {
     WHITE = 0,
     GREEN = 1,
     ORANGE = 2,
@@ -22,7 +22,7 @@ export type CubeState = {
 
 // Initial state of the rubiks cube
 const cubeInitialState: CubeState = {
-    centers: [Center.WHITE, Center.GREEN, Center.ORANGE, Center.BLUE, Center.RED, Center.YELLOW], // Centers convientely in order with white top green front
+    centers: [Color.WHITE, Color.GREEN, Color.ORANGE, Color.BLUE, Color.RED, Color.YELLOW], // Centers convientely in order with white top green front
     cp: [0, 1, 2, 3, 4, 5, 6, 7],
     co: [0, 0, 0, 0, 0, 0, 0, 0],
     ep: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
@@ -46,47 +46,47 @@ export const cubeState = ref<CubeState>(createInitialState());
 // Create fixed arrays representing the colors in relation to white top green front
 
 const fixedFaceMap = {
-    [Center.WHITE]: CubeNotation.U,
-    [Center.GREEN]: CubeNotation.F,
-    [Center.ORANGE]: CubeNotation.L,
-    [Center.BLUE]: CubeNotation.B,
-    [Center.RED]: CubeNotation.R,
-    [Center.YELLOW]: CubeNotation.D,
+    [Color.WHITE]: CubeNotation.U,
+    [Color.GREEN]: CubeNotation.F,
+    [Color.ORANGE]: CubeNotation.L,
+    [Color.BLUE]: CubeNotation.B,
+    [Color.RED]: CubeNotation.R,
+    [Color.YELLOW]: CubeNotation.D,
 }
 
 const fixedFaceMapWide = {
-    [Center.WHITE]: CubeNotation.u,
-    [Center.GREEN]: CubeNotation.f,
-    [Center.ORANGE]: CubeNotation.l,
-    [Center.BLUE]: CubeNotation.b,
-    [Center.RED]: CubeNotation.r,
-    [Center.YELLOW]: CubeNotation.d,
+    [Color.WHITE]: CubeNotation.u,
+    [Color.GREEN]: CubeNotation.f,
+    [Color.ORANGE]: CubeNotation.l,
+    [Color.BLUE]: CubeNotation.b,
+    [Color.RED]: CubeNotation.r,
+    [Color.YELLOW]: CubeNotation.d,
 }
 
 // Based on top color and front color, determine the right neighbor color
 const rightNeighbor = {
-    [Center.WHITE]: { [Center.GREEN]: Center.RED, [Center.ORANGE]: Center.GREEN, [Center.BLUE]: Center.ORANGE, [Center.RED]: Center.BLUE },
-    [Center.GREEN]: { [Center.ORANGE]: Center.YELLOW, [Center.YELLOW]: Center.RED, [Center.RED]: Center.WHITE, [Center.WHITE]: Center.ORANGE },
-    [Center.RED]: { [Center.YELLOW]: Center.BLUE, [Center.BLUE]: Center.WHITE, [Center.WHITE]: Center.GREEN, [Center.GREEN]: Center.YELLOW },
-    [Center.BLUE]: { [Center.YELLOW]: Center.ORANGE, [Center.ORANGE]: Center.WHITE, [Center.WHITE]: Center.RED, [Center.RED]: Center.YELLOW },
-    [Center.ORANGE]: { [Center.YELLOW]: Center.GREEN, [Center.GREEN]: Center.WHITE, [Center.WHITE]: Center.BLUE, [Center.BLUE]: Center.YELLOW },
-    [Center.YELLOW]: { [Center.BLUE]: Center.RED, [Center.RED]: Center.GREEN, [Center.GREEN]: Center.ORANGE, [Center.ORANGE]: Center.BLUE }
+    [Color.WHITE]: { [Color.GREEN]: Color.RED, [Color.ORANGE]: Color.GREEN, [Color.BLUE]: Color.ORANGE, [Color.RED]: Color.BLUE },
+    [Color.GREEN]: { [Color.ORANGE]: Color.YELLOW, [Color.YELLOW]: Color.RED, [Color.RED]: Color.WHITE, [Color.WHITE]: Color.ORANGE },
+    [Color.RED]: { [Color.YELLOW]: Color.BLUE, [Color.BLUE]: Color.WHITE, [Color.WHITE]: Color.GREEN, [Color.GREEN]: Color.YELLOW },
+    [Color.BLUE]: { [Color.YELLOW]: Color.ORANGE, [Color.ORANGE]: Color.WHITE, [Color.WHITE]: Color.RED, [Color.RED]: Color.YELLOW },
+    [Color.ORANGE]: { [Color.YELLOW]: Color.GREEN, [Color.GREEN]: Color.WHITE, [Color.WHITE]: Color.BLUE, [Color.BLUE]: Color.YELLOW },
+    [Color.YELLOW]: { [Color.BLUE]: Color.RED, [Color.RED]: Color.GREEN, [Color.GREEN]: Color.ORANGE, [Color.ORANGE]: Color.BLUE }
 }
 
 // Helper function to get the opposite center 
-function getOppositeCenter(center: Center) {
+function getOppositeCenter(center: Color) {
     switch(center) {
-        case Center.WHITE: return Center.YELLOW;
-        case Center.GREEN: return Center.BLUE;
-        case Center.ORANGE: return Center.RED;
-        case Center.BLUE: return Center.GREEN;
-        case Center.RED: return Center.ORANGE;
-        case Center.YELLOW: return Center.WHITE;
+        case Color.WHITE: return Color.YELLOW;
+        case Color.GREEN: return Color.BLUE;
+        case Color.ORANGE: return Color.RED;
+        case Color.BLUE: return Color.GREEN;
+        case Color.RED: return Color.ORANGE;
+        case Color.YELLOW: return Color.WHITE;
     }
 }
 
 // Helper to get the fixed slice face
-function getFixedSliceMove(face: CubeNotation, topColor: Center, frontColor: Center): { face: CubeNotation, prime: boolean } {
+function getFixedSliceMove(face: CubeNotation, topColor: Color, frontColor: Color): { face: CubeNotation, prime: boolean } {
     // Convert wide moves into slice moves if exists
     if (face === CubeNotation.r || face === CubeNotation.l) face = CubeNotation.M;
     else if (face === CubeNotation.u || face === CubeNotation.d) face = CubeNotation.E;
@@ -98,30 +98,30 @@ function getFixedSliceMove(face: CubeNotation, topColor: Center, frontColor: Cen
     let rightColor = rightNeighbor[topColor][frontColor];
 
     if (face === CubeNotation.M) {
-        if (rightColor === Center.RED) return { face: face, prime: false };
-        else if (rightColor === Center.ORANGE) return { face: face, prime: true };
-        else if (rightColor === Center.GREEN) return { face: CubeNotation.S, prime: true };
-        else if (rightColor === Center.BLUE) return { face: CubeNotation.S, prime: false };
-        else if (rightColor === Center.YELLOW) return { face: CubeNotation.E, prime: true };
-        else if (rightColor === Center.WHITE) return { face: CubeNotation.E, prime: false };
+        if (rightColor === Color.RED) return { face: face, prime: false };
+        else if (rightColor === Color.ORANGE) return { face: face, prime: true };
+        else if (rightColor === Color.GREEN) return { face: CubeNotation.S, prime: true };
+        else if (rightColor === Color.BLUE) return { face: CubeNotation.S, prime: false };
+        else if (rightColor === Color.YELLOW) return { face: CubeNotation.E, prime: true };
+        else if (rightColor === Color.WHITE) return { face: CubeNotation.E, prime: false };
     }
 
     if (face === CubeNotation.E) {
-        if (topColor === Center.WHITE) return { face: face, prime: false };
-        else if (topColor === Center.YELLOW) return { face: face, prime: true };
-        else if (topColor === Center.GREEN) return { face: CubeNotation.S, prime: true };
-        else if (topColor === Center.BLUE) return { face: CubeNotation.S, prime: false };
-        else if (topColor === Center.ORANGE) return { face: CubeNotation.M, prime: true };
-        else if (topColor === Center.RED) return { face: CubeNotation.M, prime: false };
+        if (topColor === Color.WHITE) return { face: face, prime: false };
+        else if (topColor === Color.YELLOW) return { face: face, prime: true };
+        else if (topColor === Color.GREEN) return { face: CubeNotation.S, prime: true };
+        else if (topColor === Color.BLUE) return { face: CubeNotation.S, prime: false };
+        else if (topColor === Color.ORANGE) return { face: CubeNotation.M, prime: true };
+        else if (topColor === Color.RED) return { face: CubeNotation.M, prime: false };
     }
 
     if (face === CubeNotation.S) {
-        if (frontColor === Center.GREEN) return { face: face, prime: false };
-        else if (frontColor === Center.BLUE) return { face: face, prime: true };
-        else if (frontColor === Center.ORANGE) return { face: CubeNotation.M, prime: false };
-        else if (frontColor === Center.RED) return { face: CubeNotation.M, prime: true };
-        else if (frontColor === Center.YELLOW) return { face: CubeNotation.E, prime: false };
-        else if (frontColor === Center.WHITE) return { face: CubeNotation.E, prime: true };
+        if (frontColor === Color.GREEN) return { face: face, prime: false };
+        else if (frontColor === Color.BLUE) return { face: face, prime: true };
+        else if (frontColor === Color.ORANGE) return { face: CubeNotation.M, prime: false };
+        else if (frontColor === Color.RED) return { face: CubeNotation.M, prime: true };
+        else if (frontColor === Color.YELLOW) return { face: CubeNotation.E, prime: false };
+        else if (frontColor === Color.WHITE) return { face: CubeNotation.E, prime: true };
     }
 
     // Default return
@@ -129,7 +129,7 @@ function getFixedSliceMove(face: CubeNotation, topColor: Center, frontColor: Cen
 }
 
 // Find the move that would be played if white top green front
-function getFixedMove(move: CubeMove, topColor: Center, frontColor: Center) {
+function getFixedMove(move: CubeMove, topColor: Color, frontColor: Color) {
     // One thing to note is that, whether or not a move is primed will always stay the same
     // We just need to determine the correct fixed move
 
