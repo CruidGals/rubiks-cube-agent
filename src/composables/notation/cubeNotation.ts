@@ -2,7 +2,7 @@ import { CubeMove, CubeNotation } from "../cubeLogic";
 import { computed, ref } from "vue";
 import { orient, permute } from "../util";
 
-enum Color {
+export enum Color {
     WHITE = 0,
     GREEN = 1,
     ORANGE = 2,
