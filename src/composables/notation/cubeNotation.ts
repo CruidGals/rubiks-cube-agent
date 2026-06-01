@@ -12,7 +12,7 @@ enum Center {
 }
 
 // Based on notation.md
-type CubeState = {
+export type CubeState = {
     centers: number[], // 0-5, 0 is white, 1 is green, 2 is orange, 3 is blue, 4 is red, 5 is yellow
     cp: number[],
     co: number[],
