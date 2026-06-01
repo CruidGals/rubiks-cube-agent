@@ -5,7 +5,7 @@ import { updatedCubeMoves, moveCount, currMove, usePlayMoveLogic, currPlaying } 
 import { showFaceSymbols } from '@/composables/cubeVisual';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faChevronLeft, faChevronRight, faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
-import { cubeState } from '@/composables/cubeNotation';
+import { cubeState } from '@/composables/notation/cubeNotation.js';
 import MarkdownIt from 'markdown-it';
 import Modal from '../models/Modal.vue';
 import { ref, watch } from 'vue';

@@ -2,7 +2,7 @@ import { CubeMove, isRotating, useCubeLogic, activeTween } from "./cubeLogic";
 import { ref } from "vue";
 import { isLowerCase } from "./util";
 import { resetCube } from "./cubeVisual";
-import { updateCubeState, resetCubeState } from "./cubeNotation";
+import { updateCubeState, resetCubeState } from "./notation/cubeNotation";
 
 export enum CallerType {
     player,

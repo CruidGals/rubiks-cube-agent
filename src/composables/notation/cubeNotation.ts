@@ -1,6 +1,6 @@
-import { CubeMove, CubeNotation } from "./cubeLogic";
+import { CubeMove, CubeNotation } from "../cubeLogic";
 import { computed, ref } from "vue";
-import { orient, permute } from "./util";
+import { orient, permute } from "../util";
 
 enum Center {
     WHITE = 0,

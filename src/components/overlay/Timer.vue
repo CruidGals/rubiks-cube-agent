@@ -7,7 +7,7 @@ import { useTimestamp } from '@vueuse/core';
 import MarkdownIt from 'markdown-it';
 import Modal from '../models/Modal.vue';
 import { isRotating, CubeNotation } from '@/composables/cubeLogic';
-import { isSolved } from '@/composables/cubeNotation';
+import { isSolved } from '@/composables/notation/cubeNotation.js';
 
 // Makrdown for the timer functionality
 import timerMd from '../../assets/timer.md?raw';
