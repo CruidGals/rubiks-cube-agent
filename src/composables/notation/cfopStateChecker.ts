@@ -1,4 +1,3 @@
-import { StaticReadUsage } from "three";
 import { CubeState } from "./cubeNotation";
 import { Color } from "./cubeNotation";
 
@@ -47,62 +46,45 @@ type CheckPLLResult = {
 
 /* -------------------------- Check Cross -------------------------- */
 
+type CrossChecker = (ep: number[], eo: number[]) => boolean;
+
+// Edge indices for each center-color cross (piece i must sit at slot i with eo 0)
+const crossEdgeIndices: Record<Color, number[]> = {
+    [Color.WHITE]: [0, 1, 2, 3],     // UR, UF, UL, UB
+    [Color.GREEN]: [1, 8, 5, 9],     // UF, FR, DF, FL
+    [Color.ORANGE]: [2, 9, 6, 10],   // UL, FL, DL, BL
+    [Color.BLUE]: [3, 10, 7, 11],    // UB, BL, DB, BR
+    [Color.RED]: [0, 8, 4, 11],      // UR, FR, DR, BR
+    [Color.YELLOW]: [4, 5, 6, 7],    // DR, DF, DL, DB
+};
+
+function createCrossChecker(edgeIndices: number[]): CrossChecker {
+    return (ep, eo) => edgeIndices.every(i => ep[i] === i && eo[i] === 0);
+}
+
+export const crossCheckers: Record<Color, CrossChecker> = {
+    [Color.WHITE]: createCrossChecker(crossEdgeIndices[Color.WHITE]),
+    [Color.GREEN]: createCrossChecker(crossEdgeIndices[Color.GREEN]),
+    [Color.ORANGE]: createCrossChecker(crossEdgeIndices[Color.ORANGE]),
+    [Color.BLUE]: createCrossChecker(crossEdgeIndices[Color.BLUE]),
+    [Color.RED]: createCrossChecker(crossEdgeIndices[Color.RED]),
+    [Color.YELLOW]: createCrossChecker(crossEdgeIndices[Color.YELLOW]),
+};
+
+export function isCrossSolvedForColor(color: Color, state: CubeState): boolean {
+    return crossCheckers[color](state.ep, state.eo);
+}
+
 function checkCrossSolved(state: CubeState) {
     // Check if cross is already solved
     if (cfopSolvedStates.cross.isSolved) return;
-    
-    // Check white cross first (UR, UF, UL, UB in right place)
-    if ((state.ep[0] == 0 && state.ep[1] == 1 && state.ep[2] == 2 && state.ep[3] == 3) &&
-        (state.eo[0] == 0 && state.eo[1] == 0 && state.eo[2] == 0 && state.eo[3] == 0)) {
 
-        cfopSolvedStates.cross.isSolved = true;
-        cfopSolvedStates.cross.crossColor = Color.WHITE;
-        return;
-    }
-
-    // Check green cross (UF, FR, DF, FL in right place)
-    if ((state.ep[1] == 1 && state.ep[8] == 8 && state.ep[5] == 5 && state.ep[9] == 9) &&
-        (state.eo[1] == 0 && state.eo[8] == 0 && state.eo[5] == 0 && state.eo[9] == 0)) {
-
-        cfopSolvedStates.cross.isSolved = true;
-        cfopSolvedStates.cross.crossColor = Color.GREEN;
-        return;
-    }
-
-    // Check orange cross (UL, FL, DL, BL in right place)
-    if ((state.ep[2] == 2 && state.ep[9] == 9 && state.ep[6] == 6 && state.ep[10] == 10) &&
-        (state.eo[2] == 0 && state.eo[9] == 0 && state.eo[6] == 0 && state.eo[10] == 0)) {
- 
-        cfopSolvedStates.cross.isSolved = true;
-        cfopSolvedStates.cross.crossColor = Color.ORANGE;
-        return;
-    }
-
-    // Check blue cross (UB, BL, DB, BR in right place)
-    if ((state.ep[3] == 3 && state.ep[10] == 10 && state.ep[7] == 7 && state.ep[11] == 11) &&
-        (state.eo[3] == 0 && state.eo[10] == 0 && state.eo[7] == 0 && state.eo[11] == 0)) {
-
-        cfopSolvedStates.cross.isSolved = true;
-        cfopSolvedStates.cross.crossColor = Color.BLUE;
-        return;
-    }
-
-    // Check red cross (UR, FR, DR, BR in right place)
-    if ((state.ep[0] == 0 && state.ep[8] == 8 && state.ep[4] == 4 && state.ep[11] == 11) &&
-        (state.eo[0] == 0 && state.eo[8] == 0 && state.eo[4] == 0 && state.eo[11] == 0)) {
-
-        cfopSolvedStates.cross.isSolved = true;
-        cfopSolvedStates.cross.crossColor = Color.RED;
-        return;
-    }
-
-    // Check yellow cross (DR, DF, DL, DB in right place)
-    if ((state.ep[4] == 4 && state.ep[5] == 5 && state.ep[6] == 6 && state.ep[7] == 7) &&
-        (state.eo[4] == 0 && state.eo[5] == 0 && state.eo[6] == 0 && state.eo[7] == 0)) {
-
-        cfopSolvedStates.cross.isSolved = true;
-        cfopSolvedStates.cross.crossColor = Color.YELLOW;
-        return;
+    for (const color of [Color.WHITE, Color.GREEN, Color.ORANGE, Color.BLUE, Color.RED, Color.YELLOW]) {
+        if (crossCheckers[color](state.ep, state.eo)) {
+            cfopSolvedStates.cross.isSolved = true;
+            cfopSolvedStates.cross.crossColor = color;
+            return;
+        }
     }
 }
 
