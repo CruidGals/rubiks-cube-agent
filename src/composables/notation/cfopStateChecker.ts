@@ -108,6 +108,14 @@ function checkCrossSolved(state: CubeState) {
 
 /* -------------------------- Check Everything -------------------------- */
 
+export function resetCfopSolvedStates() {
+    cfopSolvedStates.cross.isSolved = false;
+    cfopSolvedStates.cross.crossColor = null;
+    cfopSolvedStates.f2l.isSolved = false;
+    cfopSolvedStates.oll.isSolved = false;
+    cfopSolvedStates.pll.isSolved = false;
+}
+
 export function checkCfopState(state: CubeState) {
     checkCrossSolved(state);
 

@@ -2,7 +2,8 @@ import { CubeMove, isRotating, useCubeLogic, activeTween } from "./cubeLogic";
 import { ref } from "vue";
 import { isLowerCase } from "./util";
 import { resetCube } from "./cubeVisual";
-import { updateCubeState, resetCubeState } from "./notation/cubeNotation";
+import { cubeState, updateCubeState, resetCubeState } from "./notation/cubeNotation";
+import { checkCfopState, resetCfopSolvedStates } from "./notation/cfopStateChecker";
 
 export enum CallerType {
     player,
@@ -30,6 +31,12 @@ const isForcingMoveCompletion = ref(false);
 export const lastMove = ref<CubeMove | null>(null);
 
 export function usePlayMoveLogic() {
+
+    async function applySuccessfulMove(move: CubeMove, turnSpeed: number) {
+        await rotateFace(move, turnSpeed / 10);
+        await updateCubeState(move);
+        checkCfopState(cubeState.value);
+    }
 
     function prepareMove(event: KeyboardEvent) {
         // Don't turn the cube if it's rotating or playing moves
@@ -115,8 +122,7 @@ export function usePlayMoveLogic() {
 
         // Begin playing the moves to the user
         caller == CallerType.player ? isRotating.value = true : isPlaying.value = true;
-        await rotateFace(move, turnSpeed / 10);
-        await updateCubeState(move);
+        await applySuccessfulMove(move, turnSpeed);
         caller == CallerType.player ? isRotating.value = false : isPlaying.value = false;
 
         // Side effect of user move play, just reset the playingMoves variable
@@ -145,8 +151,7 @@ export function usePlayMoveLogic() {
 
         while (currPlaying.value && currMove.value < moveCount.value) {
             const currentMove = cubeMoves.value[currMove.value];
-            await rotateFace(currentMove, turnSpeed / 10);
-            await updateCubeState(currentMove);
+            await applySuccessfulMove(currentMove, turnSpeed);
             
             // Try to catch race condition with forceMoveCompletion()
             if (!isForcingMoveCompletion.value) currMove.value++;
@@ -186,14 +191,12 @@ export function usePlayMoveLogic() {
                 else isForcingMoveCompletion.value = false;
 
                 const currentMove = getComplimentMove(cubeMoves.value[start]);
-                await rotateFace(currentMove, turnSpeed / 10);
-                await updateCubeState(currentMove);
+                await applySuccessfulMove(currentMove, turnSpeed);
             }
         } else {
             while (currPlaying.value && start < end) {
                 const currentMove = cubeMoves.value[start];
-                await rotateFace(currentMove, turnSpeed / 10);
-                await updateCubeState(currentMove);
+                await applySuccessfulMove(currentMove, turnSpeed);
                 
                 if (!isForcingMoveCompletion.value) start++;
                 else isForcingMoveCompletion.value = false;
@@ -250,6 +253,7 @@ export function usePlayMoveLogic() {
         // Reset eveyrthing
         resetCube();
         resetCubeState();
+        resetCfopSolvedStates();
         currMove.value = 0;
     }
  
