@@ -47,7 +47,7 @@ type CheckPLLResult = {
 
 /* -------------------------- Check Cross -------------------------- */
 
-export function checkCrossSolved(state: CubeState) {
+function checkCrossSolved(state: CubeState) {
     // Check if cross is already solved
     if (cfopSolvedStates.cross.isSolved) return;
     
@@ -104,4 +104,12 @@ export function checkCrossSolved(state: CubeState) {
         cfopSolvedStates.cross.crossColor = Color.YELLOW;
         return;
     }
+}
+
+/* -------------------------- Check Everything -------------------------- */
+
+export function checkCfopState(state: CubeState) {
+    checkCrossSolved(state);
+
+    // Do the rest
 }
