@@ -77,15 +77,17 @@ export function isCrossSolvedForColor(color: Color, state: CubeState): boolean {
 
 function checkCrossSolved(state: CubeState) {
     // Check if cross is already solved
-    if (cfopSolvedStates.cross.isSolved) return;
+    if (cfopSolvedStates.cross.isSolved) return true;
 
     for (const color of [Color.WHITE, Color.GREEN, Color.ORANGE, Color.BLUE, Color.RED, Color.YELLOW]) {
         if (crossCheckers[color](state.ep, state.eo)) {
             cfopSolvedStates.cross.isSolved = true;
             cfopSolvedStates.cross.crossColor = color;
-            return;
+            return true;
         }
     }
+
+    return false;
 }
 
 /* -------------------------- Check Everything -------------------------- */
@@ -98,8 +100,23 @@ export function resetCfopSolvedStates() {
     cfopSolvedStates.pll.isSolved = false;
 }
 
+// Used to count how many times the cross is invalid
+// Once it reaches 15 moves (arbitrary number), cross
+// is invalidated and cfop state is reset
+let crossInvalidCount: number = 0;
+
 export function checkCfopState(state: CubeState) {
-    checkCrossSolved(state);
+    // Check the cross first
+    if (!checkCrossSolved(state)) return;
+
+    let crossColor = cfopSolvedStates.cross.crossColor;
+    if (crossCheckers[crossColor](state.ep, state.eo)) crossInvalidCount = 0;
+    else crossInvalidCount++;
+
+    if (crossInvalidCount >= 15) {
+        resetCfopSolvedStates();
+        return;
+    }
 
     // Do the rest
 }
