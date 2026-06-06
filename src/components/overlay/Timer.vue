@@ -11,6 +11,7 @@ import { isSolved } from '@/composables/notation/cubeNotation.js';
 
 // Makrdown for the timer functionality
 import timerMd from '../../assets/timer.md?raw';
+import { resetCfopSolvedStates } from '@/composables/notation/cfopStateChecker.js';
 const md = new MarkdownIt();
 const modalContent = md.render(timerMd);
 
@@ -37,6 +38,10 @@ async function applyScramble() {
 
     // Apply the scramble
     await playMoves(scramble.value, 0);
+
+    // Reset the CFOP state checker
+    // TODO: have a more streamlined way of doing this
+    resetCfopSolvedStates();
 }
 
 // Stop watch functionality
