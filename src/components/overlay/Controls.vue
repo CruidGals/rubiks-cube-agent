@@ -10,6 +10,7 @@ import MarkdownIt from 'markdown-it';
 import Modal from '../models/Modal.vue';
 import { ref, watch } from 'vue';
 import keybindMd from '../../assets/keybinds.md?raw';
+import { cfopSolvedStates } from '@/composables/notation/cfopStateChecker.js';
 
 const props = defineProps<{
     width?: string;
@@ -127,11 +128,20 @@ function centersToString(centers: number[]) {
 
         <!-- Floating text to show the cube perm, orientation, etc. -->
         <div v-if="showDebugText" class="floating-text">
-            <p>Centers: {{ centersToString(cubeState.centers) }}</p>
-            <p>CP: {{ cubeState.cp }}</p>
-            <p>CO: {{ cubeState.co }}</p>
-            <p>EP: {{ cubeState.ep }}</p>
-            <p>EO: {{ cubeState.eo }}</p>
+            <div>
+                <p>Centers: {{ centersToString(cubeState.centers) }}</p>
+                <p>CP: {{ cubeState.cp }}</p>
+                <p>CO: {{ cubeState.co }}</p>
+                <p>EP: {{ cubeState.ep }}</p>
+                <p>EO: {{ cubeState.eo }}</p>
+            </div>
+            <div>
+                <p>Center Solved: {{ cfopSolvedStates.cross.isSolved }}, Center Color: {{ centersToString([cfopSolvedStates.cross.crossColor]) }}</p>
+                <p>F2L Solved: {{ cfopSolvedStates.f2l.isSolved }}</p>
+                <p>OLL Solved: {{ cfopSolvedStates.oll.isSolved }}</p>
+                <p>PLL Solved: {{ cfopSolvedStates.pll.isSolved }}</p>
+                <p>CFOP Solved: {{ cfopSolvedStates.cross.isSolved && cfopSolvedStates.f2l.isSolved && cfopSolvedStates.oll.isSolved && cfopSolvedStates.pll.isSolved }}</p>
+            </div>
         </div>
     </div>
 </template>
@@ -212,6 +222,10 @@ function centersToString(centers: number[]) {
     }
 
     .floating-text {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+
         position: fixed;
         top: 10%;
         left: 50%;
