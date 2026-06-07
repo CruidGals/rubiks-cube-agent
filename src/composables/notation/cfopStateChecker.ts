@@ -51,6 +51,95 @@ type CheckPLLResult = {
     isSolved: boolean;
 }
 
+const f2lPairKeys = [
+    "firstPairSolved", "secondPairSolved", "thirdPairSolved", "fourthPairSolved",
+] as const satisfies readonly (keyof CheckF2LResult)[];
+
+/* -------------------------- CFOP Pipeline -------------------------- */
+
+const PIPELINE_STEPS = ["cross", "f2l", "oll", "pll"] as const;
+type PipelineStep = typeof PIPELINE_STEPS[number];
+
+const INVALID_THRESHOLD = 15;
+const F2L_PAIR_COUNT = 4;
+
+const stepInvalidCounts: Record<Exclude<PipelineStep, "f2l">, number> = {
+    cross: 0,
+    oll: 0,
+    pll: 0,
+};
+
+const f2lPairInvalidCounts = Array<number>(F2L_PAIR_COUNT).fill(0);
+
+function resetAllF2LPairs() {
+    for (const key of f2lPairKeys) cfopSolvedStates.f2l[key] = false;
+    f2lPairInvalidCounts.fill(0);
+}
+
+function resetF2LPair(pairIndex: number) {
+    cfopSolvedStates.f2l[f2lPairKeys[pairIndex]] = false;
+    f2lPairInvalidCounts[pairIndex] = 0;
+    resetFromStep("oll");
+}
+
+function resetStepState(step: PipelineStep) {
+    switch (step) {
+        case "cross":
+            cfopSolvedStates.cross.isSolved = false;
+            cfopSolvedStates.cross.crossColor = null;
+            stepInvalidCounts.cross = 0;
+            break;
+        case "f2l":
+            resetAllF2LPairs();
+            break;
+        case "oll":
+            cfopSolvedStates.oll.isSolved = false;
+            stepInvalidCounts.oll = 0;
+            break;
+        case "pll":
+            cfopSolvedStates.pll.isSolved = false;
+            stepInvalidCounts.pll = 0;
+            break;
+    }
+}
+
+function resetFromStep(step: PipelineStep) {
+    const start = PIPELINE_STEPS.indexOf(step);
+    for (let i = start; i < PIPELINE_STEPS.length; i++) {
+        resetStepState(PIPELINE_STEPS[i]);
+    }
+}
+
+// Returns false when the step hit its invalid threshold and reset itself + later steps.
+function validateStep(step: Exclude<PipelineStep, "f2l">, isValid: boolean): boolean {
+    if (isValid) {
+        stepInvalidCounts[step] = 0;
+        return true;
+    }
+
+    stepInvalidCounts[step]++;
+    if (stepInvalidCounts[step] >= INVALID_THRESHOLD) {
+        resetFromStep(step);
+        return false;
+    }
+    return true;
+}
+
+// Returns false when this pair hit its invalid threshold (pair unsolved, OLL/PLL reset).
+function validateF2LPair(pairIndex: number, isValid: boolean): boolean {
+    if (isValid) {
+        f2lPairInvalidCounts[pairIndex] = 0;
+        return true;
+    }
+
+    f2lPairInvalidCounts[pairIndex]++;
+    if (f2lPairInvalidCounts[pairIndex] >= INVALID_THRESHOLD) {
+        resetF2LPair(pairIndex);
+        return false;
+    }
+    return true;
+}
+
 /* -------------------------- Check Cross -------------------------- */
 
 type CrossChecker = (ep: number[], eo: number[]) => boolean;
@@ -82,19 +171,21 @@ export function isCrossSolvedForColor(color: Color, state: CubeState): boolean {
     return crossCheckers[color](state.ep, state.eo);
 }
 
-function checkCrossSolved(state: CubeState) {
-    // Check if cross is already solved
-    if (cfopSolvedStates.cross.isSolved) return true;
-
-    for (const color of [Color.WHITE, Color.GREEN, Color.ORANGE, Color.BLUE, Color.RED, Color.YELLOW]) {
-        if (crossCheckers[color](state.ep, state.eo)) {
-            cfopSolvedStates.cross.isSolved = true;
-            cfopSolvedStates.cross.crossColor = color;
-            return true;
+function checkCrossSolved(state: CubeState): boolean {
+    if (!cfopSolvedStates.cross.isSolved) {
+        for (const color of [Color.WHITE, Color.GREEN, Color.ORANGE, Color.BLUE, Color.RED, Color.YELLOW]) {
+            if (crossCheckers[color](state.ep, state.eo)) {
+                cfopSolvedStates.cross.isSolved = true;
+                cfopSolvedStates.cross.crossColor = color;
+                stepInvalidCounts.cross = 0;
+                return true;
+            }
         }
+        return false;
     }
 
-    return false;
+    const crossColor = cfopSolvedStates.cross.crossColor!;
+    return validateStep("cross", crossCheckers[crossColor](state.ep, state.eo));
 }
 
 /* -------------------------- Check F2L -------------------------- */
@@ -168,10 +259,6 @@ export const f2lPairCheckers: Record<Color, F2LChecker[]> = {
     [Color.YELLOW]: createF2LCheckersForColor(f2lPairSlots[Color.YELLOW]),
 };
 
-const f2lPairKeys: (keyof CheckF2LResult)[] = [
-    "firstPairSolved", "secondPairSolved", "thirdPairSolved", "fourthPairSolved",
-];
-
 export function isF2LPairSolvedForColor(color: Color, pairIndex: number, state: CubeState): boolean {
     return f2lPairCheckers[color][pairIndex](state);
 }
@@ -181,49 +268,58 @@ export function isF2LSolved(): boolean {
     return f2l.firstPairSolved && f2l.secondPairSolved && f2l.thirdPairSolved && f2l.fourthPairSolved;
 }
 
-function checkF2LSolved(state: CubeState) {
+function checkF2LPairs(state: CubeState): boolean {
     const crossColor = cfopSolvedStates.cross.crossColor;
-    if (crossColor === null) return;
+    if (crossColor === null) return false;
 
-    f2lPairKeys.forEach((key, pairIndex) => {
-        if (!cfopSolvedStates.f2l[key] && f2lPairCheckers[crossColor][pairIndex](state)) {
+    const checkers = f2lPairCheckers[crossColor];
+
+    for (let pairIndex = 0; pairIndex < F2L_PAIR_COUNT; pairIndex++) {
+        const key = f2lPairKeys[pairIndex];
+        const isPairSolved = checkers[pairIndex](state);
+
+        if (cfopSolvedStates.f2l[key]) {
+            if (!validateF2LPair(pairIndex, isPairSolved)) return false;
+        } else if (isPairSolved) {
             cfopSolvedStates.f2l[key] = true;
+            f2lPairInvalidCounts[pairIndex] = 0;
         }
-    });
+    }
+
+    return true;
+}
+
+/* -------------------------- Check OLL / PLL -------------------------- */
+
+function checkOLLSolved(state: CubeState): boolean {
+    if (!cfopSolvedStates.oll.isSolved) {
+        // TODO: detect OLL solved
+        return true;
+    }
+
+    // TODO: replace with OLL checker
+    return validateStep("oll", true);
+}
+
+function checkPLLSolved(state: CubeState): boolean {
+    if (!cfopSolvedStates.pll.isSolved) {
+        // TODO: detect PLL solved
+        return true;
+    }
+
+    // TODO: replace with PLL checker
+    return validateStep("pll", true);
 }
 
 /* -------------------------- Check Everything -------------------------- */
 
 export function resetCfopSolvedStates() {
-    cfopSolvedStates.cross.isSolved = false;
-    cfopSolvedStates.cross.crossColor = null;
-    cfopSolvedStates.f2l.firstPairSolved = false;
-    cfopSolvedStates.f2l.secondPairSolved = false;
-    cfopSolvedStates.f2l.thirdPairSolved = false;
-    cfopSolvedStates.f2l.fourthPairSolved = false;
-    cfopSolvedStates.oll.isSolved = false;
-    cfopSolvedStates.pll.isSolved = false;
+    resetFromStep("cross");
 }
 
-// Used to count how many times the cross is invalid
-// Once it reaches 15 moves (arbitrary number), cross
-// is invalidated and cfop state is reset
-let crossInvalidCount: number = 0;
-
 export function checkCfopState(state: CubeState) {
-    // Check the cross first
     if (!checkCrossSolved(state)) return;
-
-    let crossColor = cfopSolvedStates.cross.crossColor;
-    if (crossCheckers[crossColor](state.ep, state.eo)) crossInvalidCount = 0;
-    else crossInvalidCount++;
-
-    if (crossInvalidCount >= 15) {
-        resetCfopSolvedStates();
-        return;
-    }
-
-    checkF2LSolved(state);
-
-    // Do the rest
+    if (!checkF2LPairs(state)) return;
+    if (!checkOLLSolved(state)) return;
+    checkPLLSolved(state);
 }
