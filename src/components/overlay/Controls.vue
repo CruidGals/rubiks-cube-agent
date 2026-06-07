@@ -10,7 +10,7 @@ import MarkdownIt from 'markdown-it';
 import Modal from '../models/Modal.vue';
 import { ref, watch } from 'vue';
 import keybindMd from '../../assets/keybinds.md?raw';
-import { cfopSolvedStates } from '@/composables/notation/cfopStateChecker.js';
+import { cfopSolvedStates, isF2LSolved } from '@/composables/notation/cfopStateChecker.js';
 
 const props = defineProps<{
     width?: string;
@@ -137,10 +137,11 @@ function centersToString(centers: number[]) {
             </div>
             <div>
                 <p>Center Solved: {{ cfopSolvedStates.cross.isSolved }}, Center Color: {{ centersToString([cfopSolvedStates.cross.crossColor]) }}</p>
-                <p>F2L Solved: {{ cfopSolvedStates.f2l.isSolved }}</p>
+                <p>F2L Pairs: {{ cfopSolvedStates.f2l.firstPairSolved }}, {{ cfopSolvedStates.f2l.secondPairSolved }}, {{ cfopSolvedStates.f2l.thirdPairSolved }}, {{ cfopSolvedStates.f2l.fourthPairSolved }}</p>
+                <p>F2L Solved: {{ isF2LSolved() }}</p>
                 <p>OLL Solved: {{ cfopSolvedStates.oll.isSolved }}</p>
                 <p>PLL Solved: {{ cfopSolvedStates.pll.isSolved }}</p>
-                <p>CFOP Solved: {{ cfopSolvedStates.cross.isSolved && cfopSolvedStates.f2l.isSolved && cfopSolvedStates.oll.isSolved && cfopSolvedStates.pll.isSolved }}</p>
+                <p>CFOP Solved: {{ cfopSolvedStates.cross.isSolved && isF2LSolved() && cfopSolvedStates.oll.isSolved && cfopSolvedStates.pll.isSolved }}</p>
             </div>
         </div>
     </div>

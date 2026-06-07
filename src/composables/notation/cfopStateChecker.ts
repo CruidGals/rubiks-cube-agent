@@ -15,7 +15,10 @@ export const cfopSolvedStates: CfopSolvedStates = {
         crossColor: null,
     },
     f2l: {
-        isSolved: false,
+        firstPairSolved: false,
+        secondPairSolved: false,
+        thirdPairSolved: false,
+        fourthPairSolved: false,
     },
     oll: {
         isSolved: false,
@@ -96,14 +99,108 @@ function checkCrossSolved(state: CubeState) {
 
 /* -------------------------- Check F2L -------------------------- */
 
+type F2LChecker = (state: CubeState) => boolean;
 
+export type F2LPairSlots = {
+    cornerIndices: number[];
+    edgeIndices: number[];
+};
+
+// Slot indices per pair (piece i must sit at slot i; all co/eo must be 0)
+const f2lPairSlots: Record<Color, F2LPairSlots[]> = {
+    [Color.WHITE]: [
+        { cornerIndices: [], edgeIndices: [] }, // pair 1: between crossEdgeIndices[0] & [1]
+        { cornerIndices: [], edgeIndices: [] }, // pair 2: between crossEdgeIndices[1] & [2]
+        { cornerIndices: [], edgeIndices: [] }, // pair 3: between crossEdgeIndices[2] & [3]
+        { cornerIndices: [], edgeIndices: [] }, // pair 4: between crossEdgeIndices[3] & [0]
+    ],
+    [Color.GREEN]: [
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+    ],
+    [Color.ORANGE]: [
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+    ],
+    [Color.BLUE]: [
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+    ],
+    [Color.RED]: [
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+    ],
+    [Color.YELLOW]: [
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndices: [], edgeIndices: [] },
+    ],
+};
+
+function createF2LPairChecker({ cornerIndices, edgeIndices }: F2LPairSlots): F2LChecker {
+    return (state) => {
+        if (cornerIndices.length === 0 && edgeIndices.length === 0) return false;
+
+        return cornerIndices.every(i => state.cp[i] === i && state.co[i] === 0) &&
+               edgeIndices.every(i => state.ep[i] === i && state.eo[i] === 0);
+    };
+}
+
+function createF2LCheckersForColor(pairs: F2LPairSlots[]): F2LChecker[] {
+    return pairs.map(createF2LPairChecker);
+}
+
+export const f2lPairCheckers: Record<Color, F2LChecker[]> = {
+    [Color.WHITE]: createF2LCheckersForColor(f2lPairSlots[Color.WHITE]),
+    [Color.GREEN]: createF2LCheckersForColor(f2lPairSlots[Color.GREEN]),
+    [Color.ORANGE]: createF2LCheckersForColor(f2lPairSlots[Color.ORANGE]),
+    [Color.BLUE]: createF2LCheckersForColor(f2lPairSlots[Color.BLUE]),
+    [Color.RED]: createF2LCheckersForColor(f2lPairSlots[Color.RED]),
+    [Color.YELLOW]: createF2LCheckersForColor(f2lPairSlots[Color.YELLOW]),
+};
+
+const f2lPairKeys: (keyof CheckF2LResult)[] = [
+    "firstPairSolved", "secondPairSolved", "thirdPairSolved", "fourthPairSolved",
+];
+
+export function isF2LPairSolvedForColor(color: Color, pairIndex: number, state: CubeState): boolean {
+    return f2lPairCheckers[color][pairIndex](state);
+}
+
+export function isF2LSolved(): boolean {
+    const f2l = cfopSolvedStates.f2l;
+    return f2l.firstPairSolved && f2l.secondPairSolved && f2l.thirdPairSolved && f2l.fourthPairSolved;
+}
+
+function checkF2LSolved(state: CubeState) {
+    const crossColor = cfopSolvedStates.cross.crossColor;
+    if (crossColor === null) return;
+
+    f2lPairKeys.forEach((key, pairIndex) => {
+        if (!cfopSolvedStates.f2l[key] && f2lPairCheckers[crossColor][pairIndex](state)) {
+            cfopSolvedStates.f2l[key] = true;
+        }
+    });
+}
 
 /* -------------------------- Check Everything -------------------------- */
 
 export function resetCfopSolvedStates() {
     cfopSolvedStates.cross.isSolved = false;
     cfopSolvedStates.cross.crossColor = null;
-    cfopSolvedStates.f2l.isSolved = false;
+    cfopSolvedStates.f2l.firstPairSolved = false;
+    cfopSolvedStates.f2l.secondPairSolved = false;
+    cfopSolvedStates.f2l.thirdPairSolved = false;
+    cfopSolvedStates.f2l.fourthPairSolved = false;
     cfopSolvedStates.oll.isSolved = false;
     cfopSolvedStates.pll.isSolved = false;
 }
@@ -125,6 +222,8 @@ export function checkCfopState(state: CubeState) {
         resetCfopSolvedStates();
         return;
     }
+
+    checkF2LSolved(state);
 
     // Do the rest
 }
