@@ -42,6 +42,19 @@ function createInitialState(): CubeState {
 
 export const cubeState = ref<CubeState>(createInitialState());
 
+type CubeStateListener = (state: CubeState) => void;
+const cubeStateListeners: CubeStateListener[] = [];
+
+export function onCubeStateUpdated(listener: CubeStateListener) {
+    cubeStateListeners.push(listener);
+}
+
+function notifyCubeStateUpdated() {
+    for (const listener of cubeStateListeners) {
+        listener(cubeState.value);
+    }
+}
+
 // We want to get the move that would be played if white top green front
 // Create fixed arrays representing the colors in relation to white top green front
 
@@ -378,6 +391,8 @@ export function updateCubeState(move: CubeMove) {
     orientCorners(cubeState.value, fixedMove);
     permuteEdges(cubeState.value, fixedMove);
     orientEdges(cubeState.value, fixedMove);
+
+    notifyCubeStateUpdated();
 }
 
 export function resetCubeState() {

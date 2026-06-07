@@ -2,8 +2,8 @@ import { CubeMove, isRotating, useCubeLogic, activeTween } from "./cubeLogic";
 import { ref } from "vue";
 import { isLowerCase } from "./util";
 import { resetCube } from "./cubeVisual";
-import { cubeState, updateCubeState, resetCubeState } from "./notation/cubeNotation";
-import { checkCfopState, resetCfopSolvedStates } from "./notation/cfopStateChecker";
+import { updateCubeState, resetCubeState } from "./notation/cubeNotation";
+import { resetCfopSolvedStates } from "./notation/cfopStateChecker";
 
 export enum CallerType {
     player,
@@ -35,7 +35,6 @@ export function usePlayMoveLogic() {
     async function applySuccessfulMove(move: CubeMove, turnSpeed: number) {
         await rotateFace(move, turnSpeed / 10);
         await updateCubeState(move);
-        checkCfopState(cubeState.value);
     }
 
     function prepareMove(event: KeyboardEvent) {

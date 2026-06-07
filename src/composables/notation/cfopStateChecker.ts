@@ -1,32 +1,5 @@
-import { CubeState } from "./cubeNotation";
-import { Color } from "./cubeNotation";
-
-// Global cfop state checker
-export type CfopSolvedStates = {
-    cross: CheckCrossResult;
-    f2l: CheckF2LResult;
-    oll: CheckOLLResult;
-    pll: CheckPLLResult;
-}
-
-export const cfopSolvedStates: CfopSolvedStates = {
-    cross: {
-        isSolved: false,
-        crossColor: null,
-    },
-    f2l: {
-        firstPairSolved: false,
-        secondPairSolved: false,
-        thirdPairSolved: false,
-        fourthPairSolved: false,
-    },
-    oll: {
-        isSolved: false,
-    },
-    pll: {
-        isSolved: false,
-    },
-}
+import { reactive } from "vue";
+import { CubeState, Color, onCubeStateUpdated } from "./cubeNotation";
 
 /* --------------------- Return Types for functions ------------------- */
 
@@ -50,6 +23,33 @@ type CheckOLLResult = {
 type CheckPLLResult = {
     isSolved: boolean;
 }
+
+// Global cfop state checker
+export type CfopSolvedStates = {
+    cross: CheckCrossResult;
+    f2l: CheckF2LResult;
+    oll: CheckOLLResult;
+    pll: CheckPLLResult;
+}
+
+export const cfopSolvedStates = reactive<CfopSolvedStates>({
+    cross: {
+        isSolved: false,
+        crossColor: null,
+    },
+    f2l: {
+        firstPairSolved: false,
+        secondPairSolved: false,
+        thirdPairSolved: false,
+        fourthPairSolved: false,
+    },
+    oll: {
+        isSolved: false,
+    },
+    pll: {
+        isSolved: false,
+    },
+});
 
 const f2lPairKeys = [
     "firstPairSolved", "secondPairSolved", "thirdPairSolved", "fourthPairSolved",
@@ -320,3 +320,5 @@ export function checkCfopState(state: CubeState) {
     if (!checkOLLSolved(state)) return;
     checkPLLSolved(state);
 }
+
+onCubeStateUpdated(checkCfopState);
