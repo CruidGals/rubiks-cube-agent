@@ -32,8 +32,12 @@ type CheckCrossResult = {
     crossColor: Color | null;
 }
 
+// F2L is checked individually, between cross edge pairs
 type CheckF2LResult = {
-    isSolved: boolean;
+    firstPairSolved:  boolean; // between crossEdgeIndices[0] & crossEdgeIndices[1]
+    secondPairSolved: boolean; // between crossEdgeIndices[1] & crossEdgeIndices[2]
+    thirdPairSolved:  boolean; // between crossEdgeIndices[2] & crossEdgeIndices[3]
+    fourthPairSolved: boolean; // between crossEdgeIndices[3] & crossEdgeIndices[0]
 }
 
 type CheckOLLResult = {
@@ -89,6 +93,10 @@ function checkCrossSolved(state: CubeState) {
 
     return false;
 }
+
+/* -------------------------- Check F2L -------------------------- */
+
+
 
 /* -------------------------- Check Everything -------------------------- */
 
