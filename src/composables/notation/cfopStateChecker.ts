@@ -193,57 +193,54 @@ function checkCrossSolved(state: CubeState): boolean {
 type F2LChecker = (state: CubeState) => boolean;
 
 export type F2LPairSlots = {
-    cornerIndices: number[];
-    edgeIndices: number[];
+    cornerIndex: number;
+    edgeIndex: number;
 };
 
 // Slot indices per pair (piece i must sit at slot i; all co/eo must be 0)
 const f2lPairSlots: Record<Color, F2LPairSlots[]> = {
     [Color.WHITE]: [
-        { cornerIndices: [], edgeIndices: [] }, // pair 1: between crossEdgeIndices[0] & [1]
-        { cornerIndices: [], edgeIndices: [] }, // pair 2: between crossEdgeIndices[1] & [2]
-        { cornerIndices: [], edgeIndices: [] }, // pair 3: between crossEdgeIndices[2] & [3]
-        { cornerIndices: [], edgeIndices: [] }, // pair 4: between crossEdgeIndices[3] & [0]
+        { cornerIndex: 0, edgeIndex: 0 }, // pair 1: between crossEdgeIndices[0] & [1]
+        { cornerIndex: 0, edgeIndex: 0 }, // pair 2: between crossEdgeIndices[1] & [2]
+        { cornerIndex: 0, edgeIndex: 0 }, // pair 3: between crossEdgeIndices[2] & [3]
+        { cornerIndex: 0, edgeIndex: 0 }, // pair 4: between crossEdgeIndices[3] & [0]
     ],
     [Color.GREEN]: [
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
     ],
     [Color.ORANGE]: [
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
     ],
     [Color.BLUE]: [
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
     ],
     [Color.RED]: [
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
     ],
     [Color.YELLOW]: [
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
-        { cornerIndices: [], edgeIndices: [] },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 0, edgeIndex: 0 },
     ],
 };
 
-function createF2LPairChecker({ cornerIndices, edgeIndices }: F2LPairSlots): F2LChecker {
-    return (state) => {
-        if (cornerIndices.length === 0 && edgeIndices.length === 0) return false;
-
-        return cornerIndices.every(i => state.cp[i] === i && state.co[i] === 0) &&
-               edgeIndices.every(i => state.ep[i] === i && state.eo[i] === 0);
-    };
+function createF2LPairChecker({ cornerIndex, edgeIndex }: F2LPairSlots): F2LChecker {
+    return (state) =>
+        state.cp[cornerIndex] === cornerIndex && state.co[cornerIndex] === 0 &&
+        state.ep[edgeIndex] === edgeIndex && state.eo[edgeIndex] === 0;
 }
 
 function createF2LCheckersForColor(pairs: F2LPairSlots[]): F2LChecker[] {
