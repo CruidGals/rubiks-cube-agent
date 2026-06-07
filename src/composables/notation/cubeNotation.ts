@@ -1,7 +1,6 @@
 import { CubeMove, CubeNotation } from "../cubeLogic";
 import { computed, ref } from "vue";
 import { orient, permute } from "../util";
-import { checkCfopState } from "./cfopStateChecker";
 
 export enum Color {
     WHITE = 0,
@@ -379,9 +378,6 @@ export function updateCubeState(move: CubeMove) {
     orientCorners(cubeState.value, fixedMove);
     permuteEdges(cubeState.value, fixedMove);
     orientEdges(cubeState.value, fixedMove);
-
-    // Once everything is updated, update the CFOP state checker
-    checkCfopState(cubeState.value);
 }
 
 export function resetCubeState() {

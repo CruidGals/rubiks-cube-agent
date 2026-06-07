@@ -136,7 +136,7 @@ function centersToString(centers: number[]) {
                 <p>EO: {{ cubeState.eo }}</p>
             </div>
             <div>
-                <p>Center Solved: {{ cfopSolvedStates.cross.isSolved }}, Center Color: {{ centersToString([cfopSolvedStates.cross.crossColor]) }}</p>
+                <p>Center Solved: {{ cfopSolvedStates.cross.isSolved }}, Center Color: {{ cfopSolvedStates.cross.crossColor !== null ? centersToString([cfopSolvedStates.cross.crossColor]) : '—' }}</p>
                 <p>F2L Pairs: {{ cfopSolvedStates.f2l.firstPairSolved }}, {{ cfopSolvedStates.f2l.secondPairSolved }}, {{ cfopSolvedStates.f2l.thirdPairSolved }}, {{ cfopSolvedStates.f2l.fourthPairSolved }}</p>
                 <p>F2L Solved: {{ isF2LSolved() }}</p>
                 <p>OLL Solved: {{ cfopSolvedStates.oll.isSolved }}</p>

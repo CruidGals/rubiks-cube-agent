@@ -200,40 +200,40 @@ export type F2LPairSlots = {
 // Slot indices per pair (piece i must sit at slot i; all co/eo must be 0)
 const f2lPairSlots: Record<Color, F2LPairSlots[]> = {
     [Color.WHITE]: [
-        { cornerIndex: 0, edgeIndex: 0 }, // pair 1: between crossEdgeIndices[0] & [1]
-        { cornerIndex: 0, edgeIndex: 0 }, // pair 2: between crossEdgeIndices[1] & [2]
-        { cornerIndex: 0, edgeIndex: 0 }, // pair 3: between crossEdgeIndices[2] & [3]
-        { cornerIndex: 0, edgeIndex: 0 }, // pair 4: between crossEdgeIndices[3] & [0]
+        { cornerIndex: 0, edgeIndex: 8  }, // pair 1: between crossEdgeIndices[0] & [1]
+        { cornerIndex: 1, edgeIndex: 9  }, // pair 2: between crossEdgeIndices[1] & [2]
+        { cornerIndex: 2, edgeIndex: 10 }, // pair 3: between crossEdgeIndices[2] & [3]
+        { cornerIndex: 3, edgeIndex: 11 }, // pair 4: between crossEdgeIndices[3] & [0]
     ],
     [Color.GREEN]: [
         { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 4, edgeIndex: 4 },
+        { cornerIndex: 5, edgeIndex: 6 },
+        { cornerIndex: 1, edgeIndex: 2 },
     ],
     [Color.ORANGE]: [
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 1, edgeIndex: 1 },
+        { cornerIndex: 5, edgeIndex: 5 },
+        { cornerIndex: 6, edgeIndex: 7 },
+        { cornerIndex: 2, edgeIndex: 3 },
     ],
     [Color.BLUE]: [
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 2, edgeIndex: 2 },
+        { cornerIndex: 6, edgeIndex: 6 },
+        { cornerIndex: 7, edgeIndex: 4 },
+        { cornerIndex: 3, edgeIndex: 0 },
     ],
     [Color.RED]: [
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 3, edgeIndex: 3 },
+        { cornerIndex: 7, edgeIndex: 7 },
+        { cornerIndex: 4, edgeIndex: 5 },
+        { cornerIndex: 0, edgeIndex: 1 },
     ],
     [Color.YELLOW]: [
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
-        { cornerIndex: 0, edgeIndex: 0 },
+        { cornerIndex: 4, edgeIndex: 8  },
+        { cornerIndex: 5, edgeIndex: 9  },
+        { cornerIndex: 6, edgeIndex: 10 },
+        { cornerIndex: 7, edgeIndex: 11 },
     ],
 };
 
